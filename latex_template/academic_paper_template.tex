@@ -1,11 +1,14 @@
 %========================================================
-% Clean article template for literature reviews and research notes
+% Article template for AFA 2027 AI Workflow Submission Template
 %
 % Quick start:
 % 1. Replace the metadata below (title, author, affiliation).
-% 2. Replace the sample sections with your content.
+% 2. Replace the sample body sections with your content.
 % 3. Replace template_references.bib with your own .bib file.
-% 4. Compile: pdflatex -> bibtex -> pdflatex -> pdflatex
+% 4. Fill the four AFA appendix sections (A: AI workflow statement,
+%    B: initial prompt and model config, C: human contribution log,
+%    D: conversation index) from the matching files under submission/.
+% 5. Compile: pdflatex -> bibtex -> pdflatex -> pdflatex
 %========================================================
 
 \documentclass[12pt]{article}
@@ -66,5 +69,51 @@ Summarize the main findings and contributions.
 
 \bibliographystyle{plainnat}
 \bibliography{template_references}
+
+%========================================================
+% AFA 2027 Special-Session Appendix
+%
+% Required by the AFA 2027 call. Each section here mirrors a file under
+% submission/. Keep them in sync.
+%========================================================
+
+\appendix
+
+\section{AI Workflow Statement}
+\label{app:workflow}
+
+Narrative summary of how AI tools were used at each stage of the project:
+idea generation, literature review, identification, data construction,
+empirical analysis, robustness, writing, and revision. Note the stages that
+were AI-driven, the stages that involved direct human work, and the points at
+which the two interacted. Pull this from \texttt{submission/workflow.md}.
+
+\section{Initial Prompt and Model Configuration}
+\label{app:prompt}
+
+Reproduce the initial prompt verbatim, along with its issuance date, the
+target model, the interface used, attached materials, and the issuing author.
+Pull this from \texttt{submission/initial\_prompt.md} and a condensed version
+of \texttt{submission/model\_config.md}. The full configuration (system
+prompts, MCP servers, agent definitions, plugins) ships with the submission as
+supplementary material.
+
+\section{Human Contribution Log}
+\label{app:human}
+
+Summary of human work on the project. Include the total hours by author, the
+distribution of activities by stage, and the headline percentages from the
+contribution report (code lines, writing words, documentation lines).
+The full session-level table lives in \texttt{submission/human\_time\_log.md};
+the percentages and method come from \texttt{submission/contribution\_report.md}.
+
+\section{Conversation Index}
+\label{app:conversations}
+
+The AFA 2027 call requires the full text of every AI conversation conducted
+for this project. The transcripts are submitted as supplementary materials in
+\texttt{submission/conversations/}. Below is an index of those conversations,
+copied from \texttt{submission/conversations/README.md}: filename, date,
+project stage, model or agent, and conversation goal.
 
 \end{document}

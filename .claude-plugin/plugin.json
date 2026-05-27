@@ -1,26 +1,34 @@
 {
-  "name": "corbis-literature-starter-kit",
-  "displayName": "Corbis Literature Starter Kit",
-  "version": "0.1.0",
-  "description": "Literature review and idea-screening starter kit for Claude Code, powered by the Corbis MCP. Bundles the repo's six research skills — literature review, positioning, landscape figures, idea generation, idea screening, and citation verification — alongside six slash commands and a paper-reader subagent.",
+  "name": "afa-ai-workflow-template",
+  "displayName": "AFA 2027 AI Workflow Submission Template",
+  "version": "0.2.0",
+  "description": "Submission template for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Bundles four submission-tracking skills (init-submission, log-conversation, log-human-time, contribution-report), six Corbis-powered research skills (literature review, positioning, landscape, idea generation, idea screening, citation verification), matching slash commands, a paper-reader subagent, and the Corbis MCP server.",
   "author": {
     "name": "Agentic Assets",
     "url": "https://www.corbis.ai/"
   },
-  "homepage": "https://github.com/Agentic-Assets/corbis-literature-starter-kit",
-  "repository": "https://github.com/Agentic-Assets/corbis-literature-starter-kit",
+  "homepage": "https://github.com/Agentic-Assets/afa-ai-workflow",
+  "repository": "https://github.com/Agentic-Assets/afa-ai-workflow",
   "license": "MIT",
   "keywords": [
-    "corbis",
-    "literature-review",
+    "afa",
+    "afa-2027",
+    "ai-workflow",
     "research",
     "academia",
     "citations",
     "economics",
     "finance",
-    "real-estate"
+    "real-estate",
+    "corbis",
+    "literature-review"
   ],
   "skills": [
+    ".claude/skills/init-submission",
+    ".claude/skills/log-conversation",
+    ".claude/skills/log-human-time",
+    ".claude/skills/contribution-report",
+    ".claude/skills/calibrate-rubric",
     ".claude/skills/literature-review",
     ".claude/skills/literature-positioning-map",
     ".claude/skills/literature-landscape",

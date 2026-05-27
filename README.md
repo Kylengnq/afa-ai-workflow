@@ -1,87 +1,98 @@
 <div align="center">
 
-# Corbis Literature Starter Kit 
+# AFA 2027 AI Workflow Submission Template
 
-**Turn your AI assistant into a literature-review machine. Search 400,000+ papers,  
-map a field, test ideas, and come back with citations instead of 37 half-read browser tabs.**
+**A working template for the AFA 2027 Annual Meeting Special Session on papers
+written predominantly by generative AI. Bootstraps the documentation the call
+requires — initial prompt, conversation transcripts, human time log,
+contribution report — alongside literature, idea, and citation skills powered
+by the Corbis MCP.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Corbis](https://img.shields.io/badge/Powered%20by-Corbis-purple)](https://www.corbis.ai)
-[![Codex](https://img.shields.io/badge/Works%20with-Codex-black)](./CORBIS_MCP_CODEX_GUIDE.md)
 [![Claude Code](https://img.shields.io/badge/Works%20with-Claude%20Code-orange)](https://docs.anthropic.com/en/docs/claude-code)
+[![Codex](https://img.shields.io/badge/Works%20with-Codex-black)](./CORBIS_MCP_CODEX_GUIDE.md)
 [![Cursor](https://img.shields.io/badge/Works%20with-Cursor-green)](https://cursor.sh)
+[![Corbis MCP](https://img.shields.io/badge/Search%20with-Corbis-purple)](https://www.corbis.ai)
 
-[corbis.ai](https://www.corbis.ai/) | [Quick Setup](#quick-setup) | [Workflows](#the-workbench) | [Documentation](#documentation) | [Get a Corbis Key](https://www.corbis.ai) | [Corbis Research Database](#research-insights) | [Open Datasets](#open-datasets)
-
-[![Corbis landing page: research-first AI for finance and real estate](images/corbis-landing-page.png)](https://www.corbis.ai/)
+[The AFA Call](#the-afa-call) | [Quick Start](#quick-start) | [Workflows](#workflows) | [Submission Checklist](#submission-checklist) | [Project Structure](#project-structure)
 
 </div>
 
 ---
 
-## What is Corbis ([corbis.ai](https://www.corbis.ai/))
+## The AFA Call
 
-[Corbis](https://www.corbis.ai/) is **research-first AI** for finance, real estate, and economics. You ask in plain language; it **searches a large, domain-specific index** (hundreds of thousands of peer-reviewed papers, plus industry reports and market data in the product) and returns **answers with citations** you can open and check. The goal is evidence you can stand behind, not unattributed claims. For a journal-level snapshot of publications and what the corpus includes, see [Research Insights](https://www.corbis.ai/insights).
+The 2027 AFA Annual Meeting includes a **Special Session of Papers Written with
+Generative AI Workflows**, organized by Itay Goldstein (Wharton), Wei Jiang
+(Goizueta, session chair), Robert Novy-Marx (Simon), and William Mann
+(Goizueta).
 
-The full platform adds chat, guided workflows, and exports (for example PDF, Word, LaTeX, and citation formats). **MCP** (Model Context Protocol) exposes the same underlying tools to external clients (Cursor, Claude Code, Codex, and other compatible agents). **This repository is a literature starter kit** for that path: it focuses on surveying literature, mapping a field, screening ideas, and keeping citations and search trails explicit in your repo.
+Headline rules:
 
-## Why This Exists
+- The investigation begins **on or after 2026-06-01** with an initial prompt to
+  an LLM or AI agent.
+- Submission deadline is **2026-08-31**.
+- AI plays a systematic role **across multiple stages** of the project, not
+  just modular tool use.
+- Authors submit, alongside the paper, a **full text of every AI conversation**,
+  a **time log of human activity**, and a **report on the fraction of project
+  lines** (code, writing, documentation) contributed by humans versus AI.
+- Each author can be listed on at most three submissions and can submit only
+  one paper as lead. No humans outside the named authors may perform work on
+  the project.
+- The ideal is not zero human involvement, but **highest possible research
+  quality per unit of human expertise and effort.**
 
-Most AI assistants are good at sounding confident and bad at doing literature work carefully. Corbis fixes the first part by giving them live research, data, and citation tools through MCP. This repo fixes the second part by packaging those tools into reusable research workflows.
+This repo is one author's working template for that submission: a structured
+place to hold the documentation, plus the research skills the project actually
+runs on.
 
-Use it to:
+## What's in the Box
 
-- survey a literature fast
-- find the closest papers before you pitch an idea
-- brainstorm ideas and kill weak ones early
-- export citations without formatting them by hand
-- generate literature figures and keep a transparent search trail
-
-It works with **Codex**, **Claude Code**, **Cursor**, and other **MCP-compatible agents**.
-
-Claude Code gets the smoothest out-of-the-box slash-command experience. Codex, Cursor, and other MCP clients can use the same Corbis tools and the same workflow prompts from this repo.
-
-## The Workbench
-
-These are the six workflows bundled with the kit:
-
-| Workflow | What it is good for |
+| Surface | Purpose |
 |---|---|
-| `/lit-review` | Write a structured literature review on any topic |
-| `/lit-search` | Find the closest papers and sharpen your contribution |
-| `/brainstorm` | Generate ranked research ideas with rejection filtering |
-| `/idea` | Stress-test one specific research idea |
-| `/verify-citations` | Audit a `.bib` file against the literature |
-| `/lit-landscape` | Visualize trends, gaps, methods, and landmark papers |
+| `submission/` | The AFA submission package — initial prompt, model config, data access, workflow narrative, conversations/, human time log, contribution report |
+| AFA skills (`/init-submission`, `/log-conversation`, `/log-human-time`, `/contribution-report`) | Maintain the submission package as the project runs |
+| Literature skills (`/lit-review`, `/lit-search`, `/brainstorm`, `/idea`, `/verify-citations`, `/lit-landscape`) | Do the actual research; the call permits and expects AI-driven research |
+| Corbis MCP | Literature search across 400,000+ papers, plus FRED, market data, and dataset discovery |
+| `latex_template/` | A clean article template with four AFA-specific appendix sections (workflow, initial prompt, contributions, conversation index) |
+| `notes/lab_notebook.md` | Project log; every skill appends a dated entry |
 
-Plus a **paper-reader agent prompt** for assistants that support repo-defined agents.
+## Quick Start
 
-If your client does not support slash commands directly, use the same workflow names as prompt starters or follow the examples in [`SKILLS_USE_GUIDE.md`](SKILLS_USE_GUIDE.md).
+### 1. Use the repo as your project workspace
 
-## Quick Setup
+```bash
+git clone https://github.com/Agentic-Assets/afa-ai-workflow.git my-afa-project
+cd my-afa-project
+```
 
-> You need two things: an AI assistant with MCP support and a Corbis MCP API key.
+### 2. Get a Corbis API key (for literature search)
 
-### 1. Get a Corbis API key
+Open the **[Corbis app](https://www.corbis.ai)**, go to **Settings > API Keys**,
+and create a key starting with `corbis_mcp_`. Export it:
 
-Open the **[Corbis app](https://www.corbis.ai)**, go to **Settings > API Keys**, and create a key.
+```bash
+export CORBIS_MCP_API_KEY="corbis_mcp_..."
+```
 
-Corbis MCP keys start with `corbis_mcp_`. Copy the key when it is created. It is shown once.
+### 3. Wire up your AI assistant
 
-<div align="center">
+<details>
+<summary><b>Claude Code</b></summary>
 
-[![Corbis Settings, API Keys tab: MCP URL, create key, and your keys](images/corbis-api-keys.png)](https://www.corbis.ai/settings?tab=keys)
+```bash
+claude mcp add corbis --transport http https://www.corbis.ai/api/mcp/universal?apikey=YOUR_KEY
+claude
+```
 
-[https://www.corbis.ai/settings?tab=keys](https://www.corbis.ai/settings?tab=keys)
-
-</div>
-
-### 2. Connect your assistant
+Full guide: [`CORBIS_MCP_CLAUDE_CODE_GUIDE.md`](CORBIS_MCP_CLAUDE_CODE_GUIDE.md)
+</details>
 
 <details>
 <summary><b>Codex</b></summary>
 
-Add Corbis to `~/.codex/config.toml` for global use, or `.codex/config.toml` for a project-local setup:
+Add to `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.corbis]
@@ -91,102 +102,78 @@ startup_timeout_sec = 20
 tool_timeout_sec = 120
 ```
 
-Then export your key before starting Codex:
-
-```bash
-export CORBIS_MCP_API_KEY="corbis_mcp_..."
-codex
-```
-
 Full guide: [`CORBIS_MCP_CODEX_GUIDE.md`](CORBIS_MCP_CODEX_GUIDE.md)
-</details>
-
-<details>
-<summary><b>Claude Code</b></summary>
-
-```bash
-claude mcp add corbis --transport http https://www.corbis.ai/api/mcp/universal?apikey=YOUR_KEY
-git clone https://github.com/Agentic-Assets/corbis-literature-starter-kit.git my-project
-cd my-project && claude
-```
-
-Full guide: [`CORBIS_MCP_CLAUDE_CODE_GUIDE.md`](CORBIS_MCP_CLAUDE_CODE_GUIDE.md)
 </details>
 
 <details>
 <summary><b>Cursor</b></summary>
 
-```bash
-git clone https://github.com/Agentic-Assets/corbis-literature-starter-kit.git my-project
-```
-
-Then in Cursor: **Settings > MCP Servers > Add**
+**Settings > MCP Servers > Add**
 
 - Name: `corbis`
 - URL: `https://www.corbis.ai/api/mcp/universal?apikey=YOUR_KEY`
-
-Open the project after connecting the server. Cursor can use the same Corbis MCP tools and repo guidance.
-
 </details>
 
 <details>
 <summary><b>Other MCP clients</b></summary>
 
-Connect to this MCP endpoint:
-
-```text
-https://www.corbis.ai/api/mcp/universal
-```
-
-Authenticate with either:
-
-- `Authorization: Bearer YOUR_KEY`
-- `?apikey=YOUR_KEY`
+Endpoint: `https://www.corbis.ai/api/mcp/universal`. Auth via
+`Authorization: Bearer YOUR_KEY` or `?apikey=YOUR_KEY`.
 
 Architecture and client notes: [`CORBIS_MCP_GUIDE.md`](CORBIS_MCP_GUIDE.md)
 </details>
 
-No Python is required for search, review, idea screening, or citation workflows. Python is only needed for the figure-generation workflow.
+### 4. Bootstrap the submission package
 
----
-
-## First Prompts Worth Stealing
-
-**Map a field before you pretend to know it**
+On the first day of the project, after the initial prompt has been issued:
 
 ```text
-/lit-review climate risk and commercial real estate pricing
+/init-submission
 ```
 
-Builds a paper set, clusters the literature into themes, and writes a synthesized review with citations.
+The skill will validate that your initial-prompt date is on or after
+2026-06-01, then populate `submission/initial_prompt.md`,
+`submission/model_config.md`, and `submission/data_access.md`.
 
-**Pressure-test an idea before it eats a month of your life**
+### 5. Keep the documentation current as you work
 
-```text
-/idea Do bank branch closures reduce small business lending through relationship destruction?
-```
+| Workflow trigger | Skill |
+|---|---|
+| You finished an AI conversation | `/log-conversation` |
+| You finished a block of direct human work | `/log-human-time` |
+| You did research that benefits from a literature scan | `/lit-review`, `/lit-search`, `/brainstorm`, `/idea`, `/lit-landscape` |
+| You polished citations in your `.bib` | `/verify-citations` |
+| You are preparing the final submission | `/contribution-report` |
 
-Finds the closest papers, scores the idea across multiple dimensions, and returns a go, revise, or kill recommendation.
+## Workflows
 
-**Generate ideas, but keep only the survivors**
+### AFA submission skills (new)
 
-```text
-/brainstorm behavioral biases in household mortgage decisions
-```
+| Workflow | What it does |
+|---|---|
+| `/init-submission` | Capture the initial prompt, model configuration, and data access plan |
+| `/log-conversation` | Append a verbatim AI transcript to `submission/conversations/` |
+| `/log-human-time` | Append a human work session to `submission/human_time_log.md` |
+| `/contribution-report` | Recompute the human-vs-AI line tally in `submission/contribution_report.md` |
 
-Creates a wider internal idea pool, rejects weak candidates, and ranks the survivors by novelty, importance, and executability.
+### Research skills (existing)
 
-**Turn a messy literature into figures**
+| Workflow | What it does |
+|---|---|
+| `/lit-review` | Structured literature review on any topic |
+| `/lit-search` | Closest papers to your idea, contribution sharpening |
+| `/brainstorm` | Ranked research ideas with novelty rejection |
+| `/idea` | Stress-test a specific research idea |
+| `/verify-citations` | Audit a `.bib` file against the literature |
+| `/lit-landscape` | Trend, gap, method, and landmark-paper figures |
 
-```text
-/lit-landscape corporate governance and firm performance
-```
+Plus a **paper-reader subagent prompt** for assistants that support repo-defined
+agents.
 
-Produces timelines, landmark-paper charts, method views, journal distributions, and gap maps from the shared paper set.
+### How the research skills connect
 
-## How The Workflows Connect
-
-Skills share data through `output/paper_set.json`, so one workflow can hand off to the next without repeating the same searches:
+Skills share data through `output/paper_set.json`, so one workflow can hand off
+to the next without repeating searches:
 
 ```text
 /lit-review [topic]       -> builds the paper set
@@ -195,89 +182,88 @@ Skills share data through `output/paper_set.json`, so one workflow can hand off 
 /idea [specific idea]     -> finds the closest papers from the paper set
 ```
 
-Every search is also logged to `output/search_log.md` so you can see what the assistant actually looked up.
+Every search is also logged to `output/search_log.md`.
+
+## Submission Checklist
+
+Before submitting on 2026-08-31:
+
+- [ ] `submission/initial_prompt.md` populated, date on or after 2026-06-01
+- [ ] `submission/model_config.md` lists every model, agent, and MCP used
+- [ ] `submission/data_access.md` lists every data source and access window
+- [ ] `submission/workflow.md` describes the AI/human split at each stage
+- [ ] Every meaningful AI conversation is logged under `submission/conversations/`
+- [ ] `submission/human_time_log.md` covers every human work session
+- [ ] `submission/contribution_report.md` regenerated against the final repo
+- [ ] LaTeX appendix sections A through D in the paper match the artifacts above
+- [ ] Author count and per-author submission count comply with the call rules
+
+## Project Structure
+
+```text
+submission/                  AFA submission package
+  initial_prompt.md            Seed prompt and metadata
+  model_config.md              Model, agents, MCP servers
+  data_access.md               Data sources and access dates
+  workflow.md                  Stage-by-stage narrative
+  conversations/               Verbatim AI transcripts, one per file
+  human_time_log.md            Running human work log
+  contribution_report.md       Human vs AI line tally
+.claude-plugin/              Claude Code plugin manifest
+.codex-plugin/               Codex plugin manifest
+.claude/skills/              Workflow definitions (Claude Code)
+.claude/commands/            Slash-command wrappers
+.claude/agents/              Paper-reader subagent prompt
+.agents/skills/              Workflow definitions (Codex and other MCP agents)
+notes/lab_notebook.md        Project log
+output/                      Reviews, memos, figures, paper_set.json
+paper/                       LaTeX manuscript (copy from latex_template/)
+latex_template/              Article template with AFA appendix sections
+references/                  Writing norms, citation formatting
+```
 
 ## Optional Extras
 
-| Dependency | What it is for | Install |
+| Dependency | Purpose | Install |
 |---|---|---|
 | Python 3.10+ | `/lit-landscape` figures | `pip install -r requirements.txt` |
-| LaTeX | Drafting papers | Copy `latex_template/` to `paper/` |
+| LaTeX | Drafting the paper | `cp -r latex_template/ paper/` |
 
 ## Install as a Claude Code Plugin
-
-The repository is packaged as a Claude Code plugin. Installing it adds the six skills, six slash commands, the paper-reader subagent, and the Corbis MCP server to any project in one step.
 
 ```bash
 # From a Claude Code session, pointed at a local clone of this repo:
 /plugin install ./
 ```
 
-Alternatively, install directly from GitHub:
-
-```bash
-/plugin install github:Agentic-Assets/corbis-literature-starter-kit
-```
-
-The plugin manifest lives at `.claude-plugin/plugin.json` and references the skills and commands that already reside under `.claude/`. A parallel Codex manifest is provided at `.codex-plugin/plugin.json` for Codex users. Set the `CORBIS_MCP_API_KEY` environment variable before using any of the literature tools.
-
-## Project Structure
-
-```text
-.claude-plugin/     Claude Code plugin manifest
-.codex-plugin/      Codex plugin manifest
-.claude/skills/     Workflow definitions and prompts (Claude Code)
-.claude/commands/   Slash-command wrappers
-.claude/agents/     Paper-reader prompt
-.agents/skills/     Workflow definitions (Codex / other MCP agents)
-notes/              Lab notebook
-output/             Reviews, memos, figures, paper_set.json
-latex_template/     Clean article template (natbib + plainnat)
-utils/              Figure-generation helpers
-references/         Writing norms and citation formatting
-```
-
-## Research Insights
-
-Journal-level publication stats, bibliometrics, and corpus overview in the Corbis research database ([open in Corbis](https://www.corbis.ai/insights)).
-
-<div align="center">
-
-[![Research Insights: journal analytics and bibliometrics in Corbis](images/corbis-research-insights.png)](https://www.corbis.ai/insights)
-
-[https://www.corbis.ai/insights](https://www.corbis.ai/insights)
-
-</div>
-
-## Open Datasets
-
-When you need empirical data alongside literature work, Corbis hosts **[Open Datasets](https://www.corbis.ai/datasets)**: a curated collection of (mostly) free finance research datasets you can search by topic, region, or use case. It lives in the Corbis product, not in this repo, but pairs naturally with `/idea` and related workflows.
-
-<div align="center">
-
-[![Open Datasets: curated finance research datasets in Corbis](images/corbis-datasets.png)](https://www.corbis.ai/datasets)
-
-[https://www.corbis.ai/datasets](https://www.corbis.ai/datasets)
-
-</div>
+Installs the ten skills, ten slash commands, paper-reader subagent, and Corbis
+MCP server in one step. A parallel Codex manifest is at
+`.codex-plugin/plugin.json`. Set `CORBIS_MCP_API_KEY` before use.
 
 ## Documentation
 
 | File | What it covers |
 |---|---|
+| [`submission/README.md`](submission/README.md) | The submission package layout and checklist |
 | [`SKILLS_USE_GUIDE.md`](SKILLS_USE_GUIDE.md) | Which workflow to use, when, and how to chain them |
-| [`CORBIS_MCP_CODEX_GUIDE.md`](CORBIS_MCP_CODEX_GUIDE.md) | Codex setup with `config.toml`, env vars, and troubleshooting |
-| [`CORBIS_MCP_CLAUDE_CODE_GUIDE.md`](CORBIS_MCP_CLAUDE_CODE_GUIDE.md) | Claude Code setup in a few minutes |
-| [`CORBIS_MCP_TOOL_REFERENCE.md`](CORBIS_MCP_TOOL_REFERENCE.md) | Tool-by-tool parameters, outputs, and workflow tips |
-| [`CORBIS_MCP_GUIDE.md`](CORBIS_MCP_GUIDE.md) | MCP architecture, auth modes, and multi-client integration |
-| [`www.corbis.ai/docs`](https://www.corbis.ai/docs) | Complete documentation and guides for Corbis |
+| [`CORBIS_MCP_CLAUDE_CODE_GUIDE.md`](CORBIS_MCP_CLAUDE_CODE_GUIDE.md) | Claude Code setup |
+| [`CORBIS_MCP_CODEX_GUIDE.md`](CORBIS_MCP_CODEX_GUIDE.md) | Codex setup |
+| [`CORBIS_MCP_TOOL_REFERENCE.md`](CORBIS_MCP_TOOL_REFERENCE.md) | Tool-by-tool parameters and workflow tips |
+| [`CORBIS_MCP_GUIDE.md`](CORBIS_MCP_GUIDE.md) | MCP architecture and multi-client integration |
+
+## Acknowledgments and Scope
+
+This template does not endorse any one position on the appropriate role of AI
+in finance research; it just makes the documentation the AFA 2027 call
+requires easier to produce. The literature skills bundled here are useful but
+optional. Authors are free to swap them out, use different MCPs, or work
+entirely outside of these workflows — what matters for the call is the
+documentation in `submission/` and the paper itself.
 
 ---
 
 <div align="center">
 
-**Built by [Corbis](https://www.corbis.ai)**
-
-[corbis.ai](https://www.corbis.ai/) | [Quick Setup](#quick-setup) | [Workflows](#the-workbench) | [Documentation](#documentation) | [Get a Corbis Key](https://www.corbis.ai) | [Corbis Research Database](#research-insights) | [Open Datasets](#open-datasets) | [MIT License](LICENSE)
+[Corbis MCP](https://www.corbis.ai/) | [Quick Start](#quick-start) | [Workflows](#workflows) | [Submission Checklist](#submission-checklist) | [MIT License](LICENSE)
 
 </div>

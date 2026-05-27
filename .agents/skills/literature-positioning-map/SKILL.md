@@ -28,16 +28,26 @@ Your job is not to summarize everything ever written. Your job is to help the pa
 - `search_papers` (query: core topic, `minYear: 2020`, `matchCount: 15`) → the recent frontier and scooping risks.
 - These two searches frame everything that follows. Save results to `output/paper_set.json` (merge if exists) and append queries to `output/search_log.md`.
 
-**Step 1 — Inner ring (direct competitors):**
-- `search_papers` (query: the exact question + method, `matchCount: 15`) → find papers doing the closest thing.
-- `get_paper_details_batch` (paper IDs from top 5 results) → read abstracts to confirm true overlap.
+**Step 1 — Inner ring (direct competitors), paper-set-first:**
 
-**Step 2 — Middle ring (same question, different methods OR same method, different question):**
-- `search_papers` (query: the same question with alternative methods, `matchCount: 10`)
-- `search_papers` (query: the same method applied to related questions, `matchCount: 10`)
+Step 0 populated `output/paper_set.json` with ~30 papers from the topic area. Before firing a fresh search, scan that set for direct competitors — papers whose abstract or title plausibly addresses the exact question + method. Classify the situation:
+
+- **Paper set has 3+ plausible direct competitors.** No fresh inner-ring search needed. Run `get_paper_details_batch` on those 3+ IDs to confirm true overlap (one call, not a new search).
+- **Paper set has 1-2 plausible competitors but coverage feels thin.** Fire one supplemental `search_papers` (query: the exact question + method, `matchCount: 10`, `compact: true`). Combine results with the existing paper_set hits before running `get_paper_details_batch`.
+- **Paper set has no plausible direct competitors.** Fire the full inner-ring search: `search_papers` (query: the exact question + method, `matchCount: 15`, `compact: true`), then `get_paper_details_batch` on top 5.
+
+Expected savings: ~50% of inner-ring searches collapse to a batch-detail call against existing IDs.
+
+**Step 2 — Middle ring (parallel pair):**
+
+The two middle-ring queries are independent and should fire in a single message as parallel tool calls, not sequentially:
+- `search_papers` (query: the same question with alternative methods, `matchCount: 10`, `compact: true`)
+- `search_papers` (query: the same method applied to related questions, `matchCount: 10`, `compact: true`)
+
+Wait for both before merging into the paper set.
 
 **Step 3 — Outer ring (seminal and contextual):**
-- `top_cited_articles` (journalNames + query: topic) → identify canonical papers within key journals that may not have appeared in keyword searches.
+- `top_cited_articles` (journalNames + query: topic) → identify canonical papers within key journals that may not have appeared in keyword searches. If the paper_set already contains 5+ papers with `citedByCount > 500` in the area, skip this step.
 
 **Step 4 — Verify specific papers:**
 - `get_paper_details` or `get_paper_details_batch` (paper IDs) → when the user mentions a specific paper or when you need to verify what a close paper actually does vs. what its title suggests.
@@ -139,6 +149,9 @@ Read if needed:
 - Do not pad the literature review with tangentially related papers.
 - If you find a paper that substantially overlaps, tell the user immediately.
 - Verify claims about what prior papers do or do not do by reading their abstracts.
+- Always check `output/paper_set.json` before firing a fresh `search_papers` call. Step 0's architecture and frontier searches usually populate enough of the inner ring that Step 1 collapses to a batch-detail lookup.
+- When Step 2's two queries are both needed, send them in a single message as parallel tool calls.
+- Use `compact: true` on every `search_papers` call. The full payload is only needed for the 5-10 papers being read in detail via `get_paper_details_batch`.
 
 ## Example prompts
 - "Position this corporate-finance paper against the payout and investment literatures."

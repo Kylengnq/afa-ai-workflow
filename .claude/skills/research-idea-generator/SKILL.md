@@ -1,11 +1,11 @@
 ---
 name: research-idea-generator
-description: "Generate novel research ideas in finance and real estate using structured heuristic lenses with internal rejection filtering. Produces a curated Idea Menu of survivors, not a brainstorming list."
+description: "Generate novel research ideas in finance and real estate using structured heuristic lenses, then gate top-tier labels against a held-out calibration set, displacement targets, lens-source discipline, archetype benchmarking, and an adversarial two-editor desk-reject simulation. Produces a curated Idea Menu of survivors, not a brainstorming list."
 ---
 
 # Research Idea Generator
 
-Generate a broad set of candidate research ideas, kill the weak ones internally, and present only the survivors. This skill is a generator with a built-in filter. The user sees 10 ranked ideas; the model generates 25-30 and discards the rest.
+Generate a broad set of candidate research ideas, kill the weak ones internally, and present only the survivors. This skill is a generator with a built-in filter calibrated against actual top-3 finance journal outcomes. The user sees 10 ranked ideas; the model generates 25-30 and discards the rest.
 
 ## The vector-space principle
 
@@ -18,6 +18,14 @@ Three idea-source strategies, ranked by effectiveness:
 2. **Starting from a cool dataset** (risky): A dataset generates many possible directions but no "hook" connecting to a specific literature-reality gap. Without a question, tinkering with data is unproductive. A dataset is a tool, not an idea.
 
 3. **Starting from the literature** (weakest for generation): Reading papers and looking for extensions typically produces marginal additions. Literature knowledge is essential for positioning an idea, but is a poor source of ideas.
+
+## Calibration anchor
+
+Before scoring any candidate, read `references/top_journal_calibration.json` if it exists. This file is built by the `calibrate-rubric` skill and contains ~20 recent JF/JFE/RFS acceptances and ~20 stalled working-paper analogs, with each anchored by its question, mechanism, identification style, generating lens, and displacement target.
+
+The calibration set is the external anchor for the "Top Generalist Go" label. Without it, the skill falls back to internal scoring only and cannot issue Top Generalist labels — it caps at Strong Field Go and warns the user.
+
+If the file is missing, before continuing, suggest running `/calibrate-rubric` to build it. If the user declines, proceed under the cap.
 
 ## Phase 0: Collect user constraints
 
@@ -56,7 +64,7 @@ Apply all eleven lenses to the topic area. Generate 2-3 rough candidates per len
 
 ### Stage A: Generative lenses (reality-first)
 
-These lenses produce the raw material. Apply these first.
+These lenses produce the raw material. Apply these first. **For top-tier labeling, these lenses are weighted heavier — see Phase 7.**
 
 **Lens 1: Practitioner-reality gap**
 
@@ -111,21 +119,61 @@ When does a canonical finding break down? The failure must map to a theory. Incl
 
 Pair a recently available data source with a classic question. The data must enable a genuinely better answer through new identification, new measurement, or a new population, not just a new time period or higher frequency.
 
-**Hard constraint on this lens:** Ideas from this lens should almost never produce a top-3 idea unless the data changes measurement or identification in a first-order way. If the only contribution is "now we can observe X more granularly," downrank to field-journal tier (a narrower outlet, not a top generalist).
+**Hard constraint on this lens:** Ideas from Lens 10 are **capped at strong-field tier**. They can never rank top-generalist regardless of composite score. The only exception is when the new data fundamentally rewrites measurement (e.g., the first reliable measure of a previously unobservable quantity), in which case the idea should be re-classified under Lens 3 (first principles) or Lens 8 (measurement angle).
 
 **Lens 11: Model meets data**
 
 Theoretical models make quantitative predictions that have not been tested. The paper tests the prediction. What would rejection mean for the theory?
 
-## Phase 3: Three-part novelty test (internal, not shown)
+## Phase 3: Three-part novelty test (paper-set-first, then parallel)
 
-For every candidate idea (all 25-30), run this test using `search_papers`:
+For every candidate idea, answer three questions:
 
-1. **Closest existing paper**: Search for the specific idea. Name the single closest paper.
+1. **Closest existing paper**: Name the single closest paper.
 2. **Not relabeling**: In one sentence, state why this idea is not a relabeling of that paper. What is structurally different: mechanism, prediction, identification, or setting with different economics?
 3. **New prediction**: State the one prediction or finding this paper would produce that the closest paper does not.
 
-**If you cannot articulate all three clearly, the idea is discarded.** Do not proceed to the kill test.
+**Do not fire a fresh Corbis search per candidate.** Phase 1 already built `output/paper_set.json` with 30-40 papers from the topic area; that set usually resolves novelty for most candidates without new API calls. Only candidates the existing set cannot answer get a fresh search, and those run in parallel.
+
+### Step 3a — Triage against the existing paper set (internal, no API calls)
+
+For each candidate, scan `output/paper_set.json` and classify:
+
+- **Bucket A — clear close match in the set.** A paper in the set directly addresses the candidate's question. Answer the three novelty questions immediately from the existing paper. No fresh search.
+- **Bucket B — adjacent papers in the set, novelty unclear.** Existing papers are nearby but cannot definitively settle whether the candidate is novel. Queue for fresh search.
+- **Bucket C — no nearby papers in the set.** Either Phase 1 missed this corner, or the area is genuinely under-explored. Queue for fresh search.
+
+Typical mix: 50-70% of candidates land in Bucket A and resolve without new calls. The remainder go to Step 3b.
+
+### Step 3b — Parallel novelty searches for queued candidates
+
+Dispatch parallel subagents via the Agent tool, one per queued candidate, in batches of up to 10 per message. Each subagent prompt contains:
+
+- The candidate idea phrased as a research question (one sentence).
+- A summary of the paper_set context: top 5 most-cited papers in the area with one-line gloss each.
+- Instructions to run `search_papers` (`matchCount: 10`, `compact: true`) on the specific candidate, then `get_paper_details_batch` on the top 3 results.
+- The expected return shape (see below).
+
+Each subagent returns a structured verdict:
+
+```
+closest_paper_id: <Corbis ID>
+closest_paper_one_liner: <author, year, finding>
+is_relabeling: <bool>
+new_prediction: <one sentence>
+keep: <bool>
+reason: <one sentence>
+```
+
+Wait for all subagents in a batch to return before proceeding.
+
+### Step 3c — Aggregate, merge paper set, log
+
+Combine Bucket A judgments (made internally) with the subagent verdicts. Add any newly surfaced papers to `output/paper_set.json` (merge, dedupe by `id`). Append the search queries to `output/search_log.md`.
+
+**If a candidate cannot pass all three novelty questions, it is discarded.** Do not proceed to the kill test for discarded candidates.
+
+Expected cost under this design: 5-12 fresh Corbis searches (one per Bucket B/C candidate), not 25-30. A run with a well-populated paper_set from Phase 1 may need only 3-5 fresh searches.
 
 ## Phase 4: Internal kill test (not shown to user)
 
@@ -141,9 +189,23 @@ For each candidate that survives the novelty test, answer three questions:
 - Fails 2 of 3: discard
 - Fails 3 of 3: discard
 
-## Phase 5: Score and rank survivors
+## Phase 5: Score, displacement gate, archetype benchmarking
 
-For each surviving candidate (~10-15), score on three dimensions:
+For each surviving candidate (~10-15), do three things in order: name the displacement target, score the three dimensions, then benchmark against the calibration set.
+
+### Step 5a — Displacement target (hard gate)
+
+For each candidate, name in one sentence the specific paper, model, textbook claim, or empirical regularity this idea would displace if it is right. Use the prompt template:
+
+> "If this paper is accepted, what gets struck out of next year's PhD finance reading list, or which claim in a canonical model becomes wrong?"
+
+The answer must name something concrete: a paper (with author, year), a model (e.g., "the Diamond-Dybvig assumption that all withdrawals are equally informative"), or an empirical regularity (e.g., "the documented Monday effect in stock returns").
+
+**Hard gate:** If the model cannot name a concrete displacement target, **Importance is capped at 3** for this candidate. The candidate cannot rank above Strong Field tier regardless of the other scores. Vague displacement claims ("it would change how we think about X") do not count and trigger the cap.
+
+### Step 5b — Score on three dimensions
+
+For each surviving candidate, score on three dimensions:
 
 | Dimension | 1 (Low) | 3 (Medium) | 5 (High) | One-line justification required |
 |---|---|---|---|---|
@@ -158,21 +220,113 @@ For each surviving candidate (~10-15), score on three dimensions:
 - If method is unfamiliar and no coauthor fills the gap: cap Executability at 3
 - If journal ambition is top generalist but Importance < 4: flag as "field-journal tier"
 
-Select the top 10 for the Idea Menu.
+### Step 5c — Archetype benchmarking (only for candidates with composite ≥ 12)
 
-## Phase 6: Assign contribution tiers
+For each candidate scoring high enough to plausibly be top-tier, pull anchors from the prebuilt indexes in `references/top_journal_calibration.json`:
 
-For each of the 10 survivors, assign one tier:
+1. Use the `mechanism_index`, `topic_area_index`, and `identification_style_index` built by `/calibrate-rubric`. For the candidate, look up its mechanism, topic area, and identification style as keys. Take the union of paper IDs returned, deduplicate, then split into accepted vs stalled by each paper's `outcome` field. This is a dictionary lookup, not a filter pass — no per-candidate iteration over the whole calibration array.
+2. From the unioned set, pick the 3 closest accepted analogs and 2 closest stalled analogs by mechanism overlap (read the `mechanism` and `contribution_claim` fields and judge closeness).
+3. If the indexes return fewer than 3 accepted analogs, batch the candidates that need supplements and dispatch them in parallel via the Agent tool, one subagent per candidate. Each subagent runs `search_papers` filtered to JF/JFE/RFS (`minYear: <today - 24mo>`, `sortBy: "citedByCount"`, `matchCount: 10`, `compact: true`) on the candidate's mechanism + identification, returns the top 3 IDs and one-line glosses. Wait for the batch to complete before proceeding.
 
-| Tier | Description | Bar |
+For each accepted analog, write one sentence on the candidate's parity:
+
+> "Candidate is [at parity / below / above] this archetype on [breadth / cleanness / surprise] because [...]"
+
+For each stalled analog, write one sentence on the candidate's differentiation:
+
+> "Candidate differs from this stalled paper because [...]" — or, if the candidate does *not* clearly differ, that becomes a kill reason.
+
+**Hard gate:** If the candidate is below parity on *all* three accepted analogs on *all* three of breadth/cleanness/surprise, **Importance is re-scored down by 1** (minimum 2). If the candidate fails to differentiate from at least one stalled analog, **the candidate is downgraded one tier** in Phase 7.
+
+If `references/top_journal_calibration.json` is missing, skip this step but cap the verdict at Strong Field Go in Phase 7 and emit a warning.
+
+Select the top 10 by post-gate composite for the Idea Menu.
+
+## Phase 6: Two-editor desk-reject simulation (parallel)
+
+For every candidate that survived Phase 5 with composite ≥ 12 *and* a named displacement target *and* archetype parity (or no calibration set), write two desk-reject letters.
+
+### Dispatch pattern
+
+The two editors are independent and the letters are short. Dispatch them in parallel via the Agent tool: one subagent for Editor A, one for Editor B, sent in the same message. Across multiple candidates, batch the dispatch — e.g., 5 candidates × 2 editors = 10 subagents in one message. Each subagent gets the candidate idea, displacement target, mechanism, identification, the editor persona below, and the expected one-paragraph return format.
+
+Wait for all subagents in a batch to return before applying the verdict logic at the end of this phase.
+
+### Editor A — empirical corporate / intermediaries editor
+
+Simulate an editor whose taste runs to questions like Welch, Murphy, or Schoar:
+
+- Cares about: first-order question, institutional realism, identification, mechanism specificity.
+- Skeptical of: cute shocks, clever-but-niche datasets, designs that look more memorable than the question.
+- Voice: pragmatic, "tell me why this matters for how capital flows or how firms decide."
+
+Write one paragraph stating the single most likely desk-reject reason from Editor A's POV. State the reason plainly. If Editor A would in fact advance the paper to referees, write "advances" and one sentence on why.
+
+### Editor B — asset pricing / theory editor
+
+Simulate an editor whose taste runs to questions like Fama, Stambaugh, or Lewellen:
+
+- Cares about: theoretical grounding, sign predictions, sufficient statistics, out-of-sample validation, model-empirics consistency.
+- Skeptical of: empirical-only stories, mechanism claims without theory, ad hoc proxies, papers that don't restrict predictions across markets or states.
+- Voice: theoretical, "what does this rule out, and against what model?"
+
+Same format. One paragraph, or "advances" with a sentence.
+
+### Verdict from the simulation
+
+- **Both letters convincing**: downgrade the candidate one tier (top-generalist → strong-field). Log both letters.
+- **One convincing, one weak**: flag for revision. Attach the convincing letter as a "must-address" risk. Tier holds.
+- **Both weak**: candidate clears the desk-reject gate. Tier holds.
+
+Save the letters to `output/desk_reject_letters.md` for every candidate that was simulated (not just survivors).
+
+## Phase 7: Assign tier with hierarchical gates and lens-source discipline
+
+For each surviving candidate, apply gates in order. Failing any gate caps the tier.
+
+### Gate 1 — Importance ≥ 4
+
+Required for Top Generalist. If Importance < 4 (either originally or after the archetype downgrade), maximum tier is Strong Field.
+
+### Gate 2 — Contribution and Bridge ≥ 4
+
+Required for Top Generalist. The candidate must score ≥ 4 on Novelty *and* have a Bridge (theory-to-evidence) the model would describe as ≥ 4. (If Bridge was not separately scored, simulate it now: "would a strong referee accept the proposed inferential bridge?" yes = 4, with hesitation = 3.)
+
+### Gate 3 — Displacement target named
+
+If Importance was capped at 3 in Phase 5 for lack of a displacement target, maximum tier is Strong Field.
+
+### Gate 4 — Archetype parity
+
+If the candidate failed Phase 5c parity (below parity on all dimensions of all accepted analogs), maximum tier is Strong Field.
+
+### Gate 5 — Desk-reject survival
+
+If both Editor A and Editor B desk-reject letters were convincing, downgrade one tier from whatever the above gates allow.
+
+### Gate 6 — Lens-source discipline (applies to ranked positions, not gates)
+
+After gating, rank candidates. Then enforce: **at least 2 of the top 3 ranked positions must come from Lens 1 (practitioner gap), Lens 3 (first principles), or Lens 4 (unification).**
+
+If the top 3 violate this rule (e.g., all three are Lens 6 literature-gap ideas), reshuffle:
+
+- Find the highest-ranked surviving Lens-1/3/4 candidate.
+- Promote it into the top 3, displacing the lowest of the existing top 3.
+- Repeat if the rule still isn't satisfied.
+
+**Lens 10 candidates are hard-capped at Strong Field tier per Phase 2 (Stage A note).** They can rank top-10 but not top-3 under top-generalist labeling, and they cannot receive the Top Generalist tier even if all other gates are satisfied.
+
+### Final tier definitions
+
+| Tier | Description | Gates required |
 |---|---|---|
-| **Top generalist** | Broad mechanism, general implications, strong identification | Would change how a wide audience thinks about the topic |
-| **Strong field** | Clean question within an active literature, solid design | Advances the conversation in a specific field |
-| **Workshop** | Feasible and interesting but narrower scope | Good execution, useful contribution, limited breadth |
+| **Top Generalist** | Broad mechanism, general implications, strong identification, displaces a concrete target | All gates 1-5 cleared; not Lens 10 |
+| **Strong Field** | Clean question within an active literature, solid design | At least Importance ≥ 3, Contribution ≥ 3, Bridge ≥ 3 |
+| **Workshop** | Feasible and interesting but narrower scope | Falls below Strong Field gates |
 
-Be honest. Most ideas are strong-field tier. Labeling everything as top-generalist quality is a failure mode.
+Be honest. Most ideas are Strong Field tier. Labeling everything as top-generalist is the failure mode this skill exists to prevent.
 
-## Phase 7: Produce the Idea Menu
+## Phase 8: Produce the Idea Menu
 
 Use `assets/idea-menu-template.md`. Present all 10 surviving ideas plus a "Graveyard" section showing 3 rejected ideas with reasons. The graveyard teaches the user how the filter works and what makes ideas fail in this topic area.
 
@@ -180,18 +334,27 @@ Present all 10 ideas with:
 - Rank
 - One-sentence question (question-first, never "Using X data...")
 - Lens that generated it
+- **Displacement target** (one sentence)
 - Closest paper (from novelty test)
+- **Accepted archetypes** (3 papers from calibration set, with parity verdict)
+- **Stalled analogs** (2 papers, with differentiation claim)
 - Novelty / Importance / Executability scores
+- **Desk-reject summary** (Editor A and B verdicts, one line each)
+- **Gates cleared** (checklist)
 - Contribution tier
 - Key risk (from kill test)
 
-## Phase 8: Expand top 3 into Idea Sketches
+For the Graveyard section, list each killed idea with the gate that killed it (e.g., "killed at Gate 1: no displacement target; killed at Gate 4: below parity on all accepted analogs; killed at Gate 5: both editors desk-rejected").
+
+## Phase 9: Expand top 3 into Idea Sketches
 
 For the three highest-ranked ideas, provide an Idea Sketch with:
 
 **One-sentence question**
 
 **Seminar pitch**: "This paper shows that ___ because ___." One sentence that states the real contribution. If you cannot write this sentence, the idea is not formed.
+
+**Displacement target** (verbatim from Phase 5a)
 
 **Core mechanism or friction** (2-3 sentences): Name the economic force. State the testable prediction.
 
@@ -201,7 +364,13 @@ For the three highest-ranked ideas, provide an Idea Sketch with:
 
 **Key data requirements**: Specific datasets, access, coverage.
 
-**Contribution tier**: Top-journal / Field-journal / Workshop, and why.
+**Archetype anchors**: Three accepted papers from the calibration set the user should read before committing. One sentence per anchor on what to learn from it.
+
+**Stalled lessons**: Two stalled analogs and what specifically the user must do to avoid each one's fate.
+
+**Contribution tier and gates cleared**: Top Generalist / Strong Field / Workshop, with the gate checklist.
+
+**Editor A and B desk-reject letters**: Verbatim from Phase 6.
 
 **Referee vulnerability**: "The hardest challenge is whether ___ is just proxying for ___." One sentence stating the toughest objection.
 
@@ -209,13 +378,18 @@ For the three highest-ranked ideas, provide an Idea Sketch with:
 
 **Why this idea is not dominated by a cleaner adjacent project**: One sentence.
 
-## Phase 9: Recommend next steps
+## Phase 10: Recommend next steps
 
-Suggest running `/idea` on the most promising candidate for full screening. Note any ideas that would benefit from `/lit-search` to deepen positioning, or `/lit-landscape` to visualize the field structure.
+Suggest running `/idea` on the most promising candidate for full screening. Note any ideas that would benefit from `/lit-search` to deepen positioning, or `/lit-landscape` to visualize the field structure. If the calibration set is more than 6 months old, suggest refreshing with `/calibrate-rubric`.
+
+Append a dated entry to `notes/lab_notebook.md`: topic, number of candidates generated, number that cleared each gate, top 3 with tiers.
 
 ## Tool integration (Corbis MCP)
 
 **Never claim an idea is novel without searching first.**
+
+### Calibration anchor (Phase 0, before Phase 5)
+- Read `references/top_journal_calibration.json`. If missing, suggest `/calibrate-rubric` before proceeding.
 
 ### Landscape mapping (Phase 1)
 1. `search_papers` (broad topic, `matchCount: 15`) — current state
@@ -224,8 +398,14 @@ Suggest running `/idea` on the most promising candidate for full screening. Note
 4. `get_paper_details_batch` (top 5-10 paper IDs in one call) — read abstracts, get citation counts
 
 ### Per-candidate novelty checks (Phase 3)
-- `search_papers` (the specific idea, `matchCount: 10`) — for each candidate
-- `get_paper_details_batch` on the closest results across candidates — confirm overlap vs. vocabulary similarity
+- **Default: no fresh searches.** Read `output/paper_set.json` (built in Phase 1) and triage candidates into Buckets A/B/C. Bucket A resolves internally with zero API calls.
+- For Bucket B and C only: dispatch parallel subagents (Agent tool, batches of 10). Each subagent runs `search_papers` (the specific candidate idea, `matchCount: 10`, `compact: true`) and `get_paper_details_batch` on top 3 results, returning a structured verdict.
+- Expected fresh-search volume: 5-12 calls per run, not 25-30.
+
+### Archetype benchmarking (Phase 5c)
+- **Default: dictionary lookup on the calibration indexes.** No API calls for candidates whose mechanism/topic/identification are already covered.
+- Supplement only when fewer than 3 accepted analogs are returned. Supplements dispatch in parallel (one subagent per candidate needing one).
+- Each supplement subagent: `search_papers` filtered to JF/JFE/RFS (`minYear: <today - 24mo>`, `sortBy: "citedByCount"`, `matchCount: 10`, `compact: true`).
 
 ### Data feasibility
 - `search_datasets` (topic keywords) — discover available datasets
@@ -238,6 +418,7 @@ Suggest running `/idea` on the most promising candidate for full screening. Note
 
 These are hard bans. Ideas that violate these rules are discarded regardless of their score.
 
+- **No displacement target, no top tier.** Ideas without a named, concrete displacement target are capped at Strong Field. This is the single hardest gate.
 - **Ban "X but in country Y"** unless the new setting generates a genuinely different economic prediction.
 - **Ban context-only contributions** where the only novelty is applying a known result to a new industry, time period, or population without new economics.
 - **Ban ideas whose identifying variation is more memorable than the question.** If the shock is cleverer than what it identifies, the idea is backwards.
@@ -247,15 +428,20 @@ These are hard bans. Ideas that violate these rules are discarded regardless of 
 - **Do not generate more than 2 ideas from the same lens.** Breadth of attack across heuristics is the value of this skill.
 - **Do not present 10 equally enthusiastic ideas.** Rank honestly. Assign tiers honestly. Some ideas are workshop-tier. Say so.
 - **Do not overclaim novelty.** If the search reveals a close paper, note it and adjust or drop the idea.
-- **At least 3 of the 10 survivors must come from Stage A (generative) lenses.** Gap-filling and data-driven ideas are easy to generate but often lower impact.
+- **At least 2 of the top 3 must come from Lens 1, 3, or 4.** Enforced by Gate 6.
+- **Lens 10 candidates are capped at Strong Field.** No exceptions short of reclassification under Lens 3 or 8.
 - **An "interesting relationship" is NOT a research idea.** The idea must have a testable tension between theory and reality, not just a correlation to document.
+- **If the calibration set is missing, no Top Generalist labels.** Cap at Strong Field and tell the user.
+- **Do not fire one Corbis search per candidate in Phase 3.** Always triage against `output/paper_set.json` first. Only Bucket B and C candidates get fresh searches, and those dispatch in parallel.
+- **Use `compact: true` on every Phase 3 and Phase 5c supplement search.** Saves ~80% of payload bytes.
 
 ## Preferred outputs
 
 Produce:
-1. **Idea Menu** — 10 ranked survivors using `assets/idea-menu-template.md`
+1. **Idea Menu** — 10 ranked survivors using `assets/idea-menu-template.md`, with the new fields (displacement target, archetypes, desk-reject summary, gates cleared)
 2. **Idea Sketches** — expanded treatment of the top 3
-3. **Next-step recommendation** — which idea to screen first and why
+3. **Desk-reject letter archive** — `output/desk_reject_letters.md` with both editors' letters for every simulated candidate
+4. **Next-step recommendation** — which idea to screen first and why
 
 ## Example prompts
 

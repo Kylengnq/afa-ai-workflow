@@ -1,14 +1,14 @@
 {
-  "name": "corbis-literature-starter-kit-marketplace",
+  "name": "afa-ai-workflow-template-marketplace",
   "interface": {
-    "displayName": "Corbis Literature Starter Kit Plugins"
+    "displayName": "AFA 2027 AI Workflow Submission Template"
   },
   "plugins": [
     {
-      "name": "corbis-literature-starter-kit",
+      "name": "afa-ai-workflow-template",
       "source": {
         "source": "local",
-        "path": "./plugins/corbis-literature-starter-kit"
+        "path": "./plugins/afa-ai-workflow-template"
       },
       "policy": {
         "installation": "AVAILABLE",
