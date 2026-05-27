@@ -1,0 +1,52 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Data files (in case you store data locally)
+*.csv
+*.dta
+*.sas7bdat
+*.parquet
+*.feather
+*.xlsx
+*.xls
+
+# But allow template and reference files
+!latex_template/**
+!*.bib
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code session worktrees (per-session, do not commit)
+.claude/worktrees/
+
+# Credentials
+.env
+*.pgpass
+credentials*
+
+# Keep .gitkeep files
+!.gitkeep

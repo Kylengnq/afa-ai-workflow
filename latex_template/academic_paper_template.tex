@@ -1,0 +1,70 @@
+%========================================================
+% Clean article template for literature reviews and research notes
+%
+% Quick start:
+% 1. Replace the metadata below (title, author, affiliation).
+% 2. Replace the sample sections with your content.
+% 3. Replace template_references.bib with your own .bib file.
+% 4. Compile: pdflatex -> bibtex -> pdflatex -> pdflatex
+%========================================================
+
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage[svgnames]{xcolor}
+\usepackage[colorlinks=true,citecolor=DarkBlue,linkcolor=Maroon]{hyperref}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+% --- Metadata (replace these) ---
+\newcommand{\papertitle}{Your Paper Title Here}
+\newcommand{\paperauthor}{Your Name}
+\newcommand{\paperaffiliation}{Department, University}
+\newcommand{\paperemail}{you@university.edu}
+
+% --- Formatting ---
+\setstretch{1.5}
+
+\title{\papertitle}
+\author{\paperauthor\thanks{\paperaffiliation. Email: \href{mailto:\paperemail}{\paperemail}.}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Replace this with your abstract.
+\end{abstract}
+
+\bigskip
+\noindent \textbf{Keywords:} keyword one; keyword two; keyword three
+
+\newpage
+
+\section{Introduction}
+\label{sec:intro}
+
+Start with the research question and why it matters. Use \verb|\citet{}| for in-text citations (e.g., \citet{fama1993common}) and \verb|\citep{}| for parenthetical citations (e.g., \citep{petersen2009estimating}).
+
+\section{Literature Review}
+\label{sec:literature}
+
+Organize by theme, not paper by paper. Identify strands of related work and synthesize what the field knows, where it disagrees, and what remains open.
+
+\section{Discussion}
+\label{sec:discussion}
+
+Discuss implications, limitations, and directions for future research.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Summarize the main findings and contributions.
+
+\bibliographystyle{plainnat}
+\bibliography{template_references}
+
+\end{document}
