@@ -54,3 +54,11 @@ Audit citations for correctness. Checks that every \cite{KEY} has a matching Bib
    ```
 
 Process citations in batches of 5 to respect rate limits.
+
+## Next steps to suggest
+
+After delivering the audit, explicitly tell the user what to do next:
+
+1. **If any entries are MISMATCH or MISSING**: "The audit flagged <N> entries that need attention. Fix the bibliography before the next paper compile."
+2. **If the audit is clean**: "Citations check out. If the paper is near submission, run `/contribution-report` to refresh the human-vs-AI line tally before final commit."
+3. **Always remind**: "Log this audit with `/log-conversation` and any cleanup time with `/log-human-time`."

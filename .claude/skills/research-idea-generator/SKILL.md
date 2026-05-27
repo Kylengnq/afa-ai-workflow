@@ -380,7 +380,14 @@ For the three highest-ranked ideas, provide an Idea Sketch with:
 
 ## Phase 10: Recommend next steps
 
-Suggest running `/idea` on the most promising candidate for full screening. Note any ideas that would benefit from `/lit-search` to deepen positioning, or `/lit-landscape` to visualize the field structure. If the calibration set is more than 6 months old, suggest refreshing with `/calibrate-rubric`.
+At the end of the run, explicitly tell the user what to do next. Pick the most relevant recommendations based on the menu produced:
+
+1. **If the top candidate is a Top Generalist Go**: "Next, run `/idea <top candidate>` to screen it end-to-end. The menu is encouraging but `/idea` will stress-test the specific idea against the calibration anchors and produce a full Idea Card."
+2. **If the top 3 are all Strong Field or below**: "The topic produced no Top Generalist candidates. Either (a) the question is undersized for top-3 ambition — consider narrowing to a sharper friction or mechanism, or (b) the calibration set is missing close anchors — re-check the topic-area coverage. Run `/calibrate-rubric` if you suspect the latter."
+3. **If two or more top candidates would benefit from deeper positioning**: "Run `/lit-search <candidate>` to deepen the related-literature mapping before screening."
+4. **If the field structure feels unclear**: "Run `/lit-landscape <topic>` to visualize the trend, gap, and method structure."
+5. **If the calibration set is more than 6 months old**: "Consider refreshing with `/calibrate-rubric` before relying on Top Generalist labels — the frontier moves."
+6. **Always remind**: "Log this brainstorming conversation with `/log-conversation` and the time spent reviewing the output with `/log-human-time` so the AFA submission record stays current."
 
 Append a dated entry to `notes/lab_notebook.md`: topic, number of candidates generated, number that cleared each gate, top 3 with tiers.
 

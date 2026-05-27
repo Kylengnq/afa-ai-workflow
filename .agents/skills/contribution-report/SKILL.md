@@ -68,3 +68,12 @@ contributed by humans as opposed to AI." This skill produces that report.
 - Note that the absolute split alone is not a quality signal: the AFA call
   prizes "highest possible research quality per unit of human expertise and
   effort," not a minimal human share.
+
+## Next steps to suggest
+
+After regenerating the report, explicitly tell the user what to do next:
+
+1. **If the report ran cleanly**: "Contribution report regenerated. Walk through the rest of the `submission/` checklist in `submission/README.md` — confirm `workflow.md`, `conversations/`, and `human_time_log.md` are all current."
+2. **If edge cases were flagged**: "Some classifications were ambiguous (see the Edge cases section). Resolve them by either adjusting the committer attribution convention or by annotating the edge cases with your manual classification."
+3. **Approaching submission deadline (2026-08-31)**: "Run `/verify-citations` on the final `.bib` and confirm the LaTeX appendix sections A-D match the artifacts under `submission/`. Then commit and prepare submission."
+4. **Always remind**: "Log this contribution-report run with `/log-conversation` and the time reviewing the output with `/log-human-time`."

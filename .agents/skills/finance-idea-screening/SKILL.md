@@ -319,6 +319,16 @@ When assessing journal fit, the accepted archetypes from the calibration set ser
 
 Use the template in `assets/idea-card-template.md`. Add a section for displacement target, archetype benchmarking, and the two desk-reject letters even if the template does not yet have those slots — the skill output is authoritative.
 
+## Next steps to suggest
+
+At the end of the screen, explicitly tell the user what to do next based on the verdict:
+
+1. **Top Generalist Go**: "Strong verdict. Next, run `/lit-search <idea>` to deepen the related-literature positioning before drafting the contribution paragraph. After that, consider `/data-plan` (if available in your skill set) or start the data construction. Log this screening conversation with `/log-conversation`."
+2. **Strong Field Go**: "Solid verdict but capped below top-3. The gate(s) that failed tell you where to push — typically Importance or displacement target. Options: (a) tighten the framing to clear the failed gate and re-run `/idea`, (b) accept the strong-field target and run `/lit-search` to position, or (c) run `/brainstorm` in the same topic area to find a sharper variant."
+3. **Revise**: "The idea has substance but at least one essential hurdle. Address the specific gate that failed (often Bridge or Contribution), then re-run `/idea`. If the failed gate is structural (e.g., no clean identification possible), pivot via `/brainstorm` rather than iterating."
+4. **Kill / Pivot**: "The idea does not survive screening. Run `/brainstorm <topic area>` to generate alternatives in the same space, or `/lit-review <topic>` first if you want a deeper map before regenerating ideas."
+5. **Always remind**: "Log this screening conversation with `/log-conversation` and the time spent reviewing the verdict with `/log-human-time`."
+
 ## Example prompts
 - "Give me three corporate-finance ideas using private-credit data."
 - "Is this housing-supply idea strong enough for a top real-estate journal?"

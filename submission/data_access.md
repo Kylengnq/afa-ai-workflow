@@ -12,6 +12,18 @@ this to judge whether the AI workflow could in principle be reproduced.
 | e.g., FRED | macro | REST API | public | YYYY-MM-DD | YYYY-MM-DD |
 |  |  |  |  |  |  |
 
+## Data access at initial prompt
+
+Record what the AI system could access when the investigation began.
+
+| Item | Value |
+|---|---|
+| Files attached to initial prompt |  |
+| APIs or MCP servers enabled at initial prompt |  |
+| Credentials available to AI at initial prompt |  |
+| Data sources intentionally withheld from AI |  |
+| Human-only data access tasks, if any |  |
+
 ## Notes on access
 
 For each source list:
@@ -32,3 +44,9 @@ script.
 
 Note the license for each source and confirm that the submission can include or
 reference the data without violating its terms.
+
+## Reproducibility limits
+
+Document any limits a reviewer should know: proprietary data that cannot be
+redistributed, credentials that expire, API rate limits, query windows, or data
+versions that may change after the submission deadline.

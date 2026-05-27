@@ -153,6 +153,15 @@ Read if needed:
 - When Step 2's two queries are both needed, send them in a single message as parallel tool calls.
 - Use `compact: true` on every `search_papers` call. The full payload is only needed for the 5-10 papers being read in detail via `get_paper_details_batch`.
 
+## Next steps to suggest
+
+After delivering the positioning memo, explicitly tell the user what to do next:
+
+1. **If 1-2 papers turn out to be very close**: "The positioning is tight against <paper>. Run `/idea` to stress-test whether your differentiation survives the displacement-target and archetype gates. If it doesn't, consider a pivot via `/brainstorm`."
+2. **If positioning is clean with no direct competitor**: "Positioning is clean. Next, draft the contribution paragraph using the structured output, and run `/verify-citations` once your `.bib` is in place."
+3. **If recent working papers (post-2020, low citation) showed up**: "Watch the recent working papers flagged in the memo — these are the scooping risks. Set a reminder to re-run `/lit-search` 3-6 months from now."
+4. **Always remind**: "Log this positioning conversation with `/log-conversation` and the time spent reviewing the memo with `/log-human-time`."
+
 ## Example prompts
 - "Position this corporate-finance paper against the payout and investment literatures."
 - "Draft a related-literature roadmap for a commercial real-estate distress paper."

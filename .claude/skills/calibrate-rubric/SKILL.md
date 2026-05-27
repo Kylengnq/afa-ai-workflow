@@ -208,3 +208,11 @@ The frontier moves. Refresh the calibration set:
 - Stalled-paper classification is heuristic. Mark uncertain cases as
   `outcome: "uncertain"` rather than forcing a binary label, and exclude
   them from the gate computation.
+
+## Next steps to suggest
+
+After completing this skill, explicitly tell the user what to do next:
+
+1. **If this was the first calibration build**: "The calibration anchor is now built. Next, run `/brainstorm <your topic>` to generate ten ranked ideas calibrated against the anchor, or `/idea <your specific question>` if you already have one to screen."
+2. **If this was a refresh of an older calibration set**: "The calibration set has been refreshed against the recent frontier. Any prior `/brainstorm` or `/idea` verdicts may be slightly recalibrated if you re-run them."
+3. **If the calibration set failed sanity checks** (e.g., fewer than 15 accepted papers found): "Calibration coverage is thin in <area>. Re-run with broader topic coverage or wait for more recent acceptances before relying on Top Generalist labels in that area."

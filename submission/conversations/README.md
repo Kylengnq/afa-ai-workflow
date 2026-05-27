@@ -4,6 +4,11 @@ One file per AI conversation, capturing the full transcript. The AFA call asks
 for "a text of all conversations with AI"; this directory satisfies that
 requirement.
 
+Log the initial prompt conversation, research conversations, coding sessions,
+analysis sessions, writing sessions, review sessions, failed attempts, and
+autonomous runs. Do not omit a conversation because it produced no final
+artifact.
+
 ## File naming
 
 ```
@@ -36,7 +41,6 @@ maintains this table automatically.
 
 | File | Date | Stage | Model / agent | Goal |
 |---|---|---|---|---|
-|  |  |  |  |  |
 
 ## Privacy note
 

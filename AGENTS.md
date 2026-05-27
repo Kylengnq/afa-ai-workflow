@@ -15,10 +15,18 @@ shape as the project runs.
 - Investigation begins **on or after 2026-06-01** with an initial prompt to an
   LLM or AI agent.
 - Submission deadline is **2026-08-31**.
+- Submission opens through the AFA website in early June, with no submission
+  fee.
+- The project must be entirely new and can be on any topic appropriate to a top
+  finance journal.
 - AI plays a systematic role across multiple stages, not just modular tool use.
 - No humans outside the named authors may perform work on the project.
 - Each author can submit only one lead-author paper and be listed on at most
   three submissions total.
+- The ideal is highest possible research quality per unit of human expertise
+  and effort, not minimum human involvement.
+- Organizers state they will not use non-public submission and review
+  information for their own research.
 
 **What this repo expects of the assistant:**
 
@@ -30,9 +38,11 @@ shape as the project runs.
 3. The initial prompt, model configuration, and data access plan live in
    `submission/initial_prompt.md`, `submission/model_config.md`, and
    `submission/data_access.md`. Use `init-submission` on day one.
-4. Before submission, run `contribution-report` to regenerate the
+4. The call summary and compliance map live in
+   `submission/call_requirements.md`.
+5. Before submission, run `contribution-report` to regenerate the
    human-vs-AI line tally.
-5. The LaTeX template (`latex_template/academic_paper_template.tex`)
+6. The LaTeX template (`latex_template/academic_paper_template.tex`)
    includes Appendix A-D placeholders that mirror these artifacts.
 
 ## Skill routing
@@ -42,6 +52,7 @@ Before responding to any research-related prompt, check whether a skill applies.
 | User is asking about... | Use skill |
 |---|---|
 | Set up the AFA submission package | `init-submission` |
+| Build or refresh the top-3 journal calibration anchor | `calibrate-rubric` |
 | Capture an AI conversation transcript | `log-conversation` |
 | Log a block of human work | `log-human-time` |
 | Regenerate the human-vs-AI contribution tally | `contribution-report` |
@@ -51,6 +62,8 @@ Before responding to any research-related prompt, check whether a skill applies.
 | Screen or score a specific research idea | `finance-idea-screening` |
 | Verify citations in a .bib file | `verify-citations` |
 | Visualize literature trends, gaps, methods | `literature-landscape` |
+
+**First-time setup ordering:** `init-submission` → `calibrate-rubric` → `research-idea-generator` or `finance-idea-screening`. The calibration set at `references/top_journal_calibration.json` is required for the idea skills to issue "Top Generalist Go" verdicts; without it they cap at Strong Field Go.
 
 ## Corbis tool usage
 

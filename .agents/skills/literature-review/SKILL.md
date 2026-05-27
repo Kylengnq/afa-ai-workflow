@@ -333,6 +333,16 @@ This skill can feed into all of the above. A natural workflow is: `literature-re
 - **Respect the checkpoint.** Do not skip Phase 2 approval. The strand structure determines the quality of the review.
 - **No topic-label reviews.** "This relates to three literatures" with no internal structure is the failure mode this skill exists to prevent.
 
+## Next steps to suggest
+
+After delivering the review, explicitly tell the user what to do next:
+
+1. **If the user wants research ideas in this area**: "The paper_set is now populated. Next, run `/brainstorm <topic>` to generate ten ranked ideas. The brainstorm will reuse this paper set, so most candidates resolve novelty internally without new searches."
+2. **If the user has a specific question already**: "Run `/idea <your question>` to screen it against the literature you just reviewed."
+3. **If figures would help understand the field structure**: "Run `/lit-landscape <topic>` to visualize the trend, gap, and method structure from the same paper set."
+4. **If the top 3-5 papers warrant deep reading**: "Run the paper-reader agent on the top 3-5 foundational papers before writing synthesis claims that depend on their details."
+5. **Always remind**: "Log this literature-review conversation with `/log-conversation` and the time spent on the review with `/log-human-time`."
+
 ## Example prompts
 
 - "Write a comprehensive literature review on climate risk and commercial real estate pricing."

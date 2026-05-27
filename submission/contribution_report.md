@@ -14,6 +14,13 @@ state of the repo.
 
 Date generated: YYYY-MM-DD
 
+## Scope
+
+This report should cover code, paper text, research notes, submission
+documentation, and generated artifacts that remain part of the final project
+record. Exclude external source data and third-party library files. If the
+project copied or vendored any third-party material, list it under edge cases.
+
 ## Method
 
 Describe how each number was computed. Suggested defaults:
@@ -30,6 +37,9 @@ Describe how each number was computed. Suggested defaults:
 - **Documentation**: line count of `README.md`, `CLAUDE.md`, `AGENTS.md`,
   files under `notes/`, and everything under `submission/` except generated
   artifacts.
+- **Transcripts**: count transcript files as documentation, but classify the
+  assistant turns as AI-authored and the user turns as human-authored when the
+  report can distinguish them.
 
 If a different method was used, describe it here.
 
@@ -41,6 +51,10 @@ Document anything that the line-counting heuristic mishandles:
 - AI-generated tables that the human pasted into the paper unchanged.
 - Refactors that touched many lines but did not change semantic content.
 - Files where authorship is genuinely ambiguous.
+- Pre-existing template files that were copied into the project before the
+  initial prompt.
+- Third-party code, data dictionaries, or quotations that should not be
+  credited to either the human authors or the AI workflow.
 
 ## Notes on the human contribution
 

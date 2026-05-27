@@ -218,6 +218,15 @@ opportunity.
 - **The gap map dimensions matter.** Bad dimensions produce uninformative figures. Propose dimensions that reflect real intellectual distinctions in the field, not arbitrary categories.
 - **Push work to Python.** The AI collects data and writes the JSON. Python does the feature extraction, keyword analysis, method detection, and figure rendering. Do not attempt to generate figures by describing them in text.
 
+## Next steps to suggest
+
+After delivering the figures, explicitly tell the user what to do next:
+
+1. **If the gap map surfaces obvious holes**: "The gap map highlights <empty region>. Run `/brainstorm <topic>` focused on that gap to generate ideas in the unexplored area."
+2. **If citation landmarks reveal canonical papers the user has not read**: "Run the paper-reader agent on the landmark papers before drafting any synthesis or contribution claims."
+3. **If the method timeline shows a recent inflection**: "The frontier method is shifting toward <method>. Factor that into the bridge dimension when you run `/idea` on candidates."
+4. **Always remind**: "Log this landscape conversation with `/log-conversation` and the human review time with `/log-human-time`."
+
 ## Example prompts
 
 - "Visualize the landscape of the political connections literature" (fresh search)

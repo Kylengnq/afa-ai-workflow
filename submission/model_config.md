@@ -20,6 +20,22 @@ ran on.
 |---|---|---|
 |  |  |  |
 
+## AI role by stage
+
+Use this table to show that AI was used systematically across the research
+process rather than only for modular tasks.
+
+| Stage | Models / agents used | AI responsibilities | Human controls or review |
+|---|---|---|---|
+| idea |  |  |  |
+| literature |  |  |  |
+| design |  |  |  |
+| data |  |  |  |
+| analysis |  |  |  |
+| robustness |  |  |  |
+| writing |  |  |  |
+| revision |  |  |  |
+
 ## System prompts and instruction files
 
 List every file that shaped agent behavior (e.g., `CLAUDE.md`, `AGENTS.md`,
@@ -38,6 +54,9 @@ to do. Paste the contents under a fenced block or link to the file in this repo.
 Workflow skills invoked during the project (literature-review,
 research-idea-generator, init-submission, etc.). Note any custom skills built
 specifically for this project.
+
+| Skill / plugin | Purpose | Dates used | Conversation links |
+|---|---|---|---|
 
 ## Settings and budgets
 
