@@ -7,8 +7,6 @@ to judge how much of the workflow was AI-driven.
 
 | Model ID | Role | Version / date | Temperature / thinking | Context window |
 |---|---|---|---|---|
-| e.g., claude-opus-4-7 | main research agent | 2026-06 | thinking on, default temp | 1M |
-|  |  |  |  |  |
 
 ## Agents and roles
 
@@ -18,7 +16,6 @@ ran on.
 
 | Agent | Responsibility | Backing model |
 |---|---|---|
-|  |  |  |
 
 ## AI role by stage
 
@@ -46,8 +43,6 @@ to do. Paste the contents under a fenced block or link to the file in this repo.
 
 | MCP server | URL / endpoint | Tools used |
 |---|---|---|
-| corbis | https://www.corbis.ai/api/mcp/universal | search_papers, get_paper_details, ... |
-|  |  |  |
 
 ## Plugins and skills
 
@@ -67,3 +62,10 @@ Any rate limits, budget caps, or autonomy ceilings imposed on the agent.
 Anything a reviewer would need to reproduce the workflow: pinned model
 versions, environment files (`requirements.txt`, lockfiles), seeds, time of
 last successful run.
+
+## Example rows
+
+These examples are illustrative. Do not leave them as project records.
+
+- Primary model: `| claude-opus-4-7 | main research agent | 2026-06 | thinking on, default temp | 1M |`
+- MCP server: `| corbis | https://www.corbis.ai/api/mcp/universal | search_papers, get_paper_details, export_citations |`

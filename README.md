@@ -140,7 +140,8 @@ Architecture and client notes: [`CORBIS_MCP_GUIDE.md`](CORBIS_MCP_GUIDE.md)
 
 ### 4. First run — in this order
 
-The skills depend on a small amount of setup. Run them in this order the first time:
+The skills depend on a small amount of setup. For a real AFA project, run them
+in this order on or after 2026-06-01:
 
 ```text
 /init-submission        # captures the initial prompt, validates 2026-06-01+, populates submission/

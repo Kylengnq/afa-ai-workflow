@@ -24,6 +24,10 @@ this once, on the day the project starts.
 | Target model and version | Yes | e.g., claude-opus-4-7 |
 | Interface or CLI used | Yes | e.g., Claude Code, Codex CLI, ChatGPT web |
 | Issuing author | Yes | Name as it will appear on the paper |
+| Named authors | Yes | All humans who may perform project work |
+| New-project confirmation | Yes | Must confirm no investigation before 2026-06-01 |
+| Lead-author submission confirmation | Yes | Issuing lead author has no other lead-author submission |
+| Total-submission confirmation | Yes | Each listed author appears on at most three submissions |
 | Attached materials | No | Files, links, datasets given to the agent |
 | MCP servers planned | No | List the servers in `.mcp.json` |
 | Planned data sources | No | Corbis, WRDS, FRED, etc. |
@@ -35,20 +39,28 @@ this once, on the day the project starts.
    If unclear, ask.
 2. Validate the issuance date: must be on or after 2026-06-01. If earlier,
    refuse to proceed and explain the call's rule.
-3. Populate `submission/initial_prompt.md`:
+3. Validate eligibility:
+   - The project is entirely new.
+   - The initial prompt is the first project act.
+   - Only named authors will perform human work.
+   - The lead-author and total-submission caps are satisfied.
+4. Populate `submission/initial_prompt.md`:
    - Fill the metadata table with the inputs.
+   - Fill the eligibility gate table.
    - Paste the prompt text verbatim under "Prompt text."
    - Ask the user for the one-or-two sentence "Why this question" rationale.
-4. Populate `submission/model_config.md` with the model, version, settings,
+5. Populate `submission/model_config.md` with the model, version, settings,
    MCP servers, planned agents, and instruction files (`CLAUDE.md`,
-   `AGENTS.md`).
-5. Populate `submission/data_access.md` with the planned data sources,
+   `AGENTS.md`), including the expected AI role by project stage.
+6. Populate `submission/data_access.md` with the planned data sources,
    credential scope, and access method.
-6. If `submission/human_time_log.md` is empty (only the header), add a first
+7. Confirm `submission/call_requirements.md` exists and points to the populated
+   artifacts. If it does not exist, create it from the call requirements.
+8. If `submission/human_time_log.md` is empty (only the header), add a first
    entry covering the time the human spent issuing the initial prompt.
-7. If the first AI response exists, immediately invoke the `log-conversation`
+9. If the first AI response exists, immediately invoke the `log-conversation`
    skill so `submission/conversations/` has its first transcript.
-8. Append a dated entry to `notes/lab_notebook.md`:
+10. Append a dated entry to `notes/lab_notebook.md`:
    `## YYYY-MM-DD — init-submission` followed by a one-line summary.
 
 ## Outputs
@@ -56,6 +68,7 @@ this once, on the day the project starts.
 - `submission/initial_prompt.md` (populated)
 - `submission/model_config.md` (populated)
 - `submission/data_access.md` (populated)
+- `submission/call_requirements.md` (confirmed)
 - `submission/human_time_log.md` (first row added)
 - Optional: first transcript file in `submission/conversations/`
 - Entry in `notes/lab_notebook.md`
@@ -67,6 +80,8 @@ this once, on the day the project starts.
   call caps each author at three submissions).
 - Warn if any non-author humans are listed as contributors (the call requires
   that no humans outside the named authors perform work on the project).
+- Refuse to proceed unless the user confirms the paper is an entirely new
+  project and the initial prompt is the first project act.
 
 ## Next steps to suggest
 

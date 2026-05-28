@@ -2,7 +2,7 @@
   "name": "afa-ai-workflow-template",
   "displayName": "AFA 2027 AI Workflow Submission Template",
   "version": "0.2.0",
-  "description": "Submission template for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Bundles four submission-tracking skills (init-submission, log-conversation, log-human-time, contribution-report), six Corbis-powered research skills (literature review, positioning, landscape, idea generation, idea screening, citation verification), matching slash commands, a paper-reader subagent, and the Corbis MCP server.",
+  "description": "Submission template for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Bundles four submission-tracking skills (init-submission, log-conversation, log-human-time, contribution-report), one calibration skill, six Corbis-powered research skills (literature review, positioning, landscape, idea generation, idea screening, citation verification), matching slash commands, a paper-reader subagent, and the Corbis MCP server.",
   "author": {
     "name": "Agentic Assets",
     "url": "https://www.corbis.ai/"

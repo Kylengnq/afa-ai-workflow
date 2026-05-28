@@ -86,3 +86,4 @@ files before submission.
 - [ ] Every block of direct human work is present in `submission/human_time_log.md`.
 - [ ] `submission/contribution_report.md` has been regenerated from the final repo.
 - [ ] The paper appendices match the submission artifacts.
+- [ ] Submission is made through the AFA website by 2026-08-31.

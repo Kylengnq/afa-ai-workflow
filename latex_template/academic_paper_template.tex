@@ -5,7 +5,7 @@
 % 1. Replace the metadata below (title, author, affiliation).
 % 2. Replace the sample body sections with your content.
 % 3. Replace template_references.bib with your own .bib file.
-% 4. Fill the four AFA appendix sections (A: AI workflow statement,
+% 4. Fill the four AFA appendix sections (A: AI workflow and compliance,
 %    B: initial prompt and model config, C: human contribution log,
 %    D: conversation index) from the matching files under submission/.
 % 5. Compile: pdflatex -> bibtex -> pdflatex -> pdflatex
@@ -79,14 +79,22 @@ Summarize the main findings and contributions.
 
 \appendix
 
-\section{AI Workflow Statement}
+\section{AI Workflow and Compliance Statement}
 \label{app:workflow}
 
 Narrative summary of how AI tools were used at each stage of the project:
 idea generation, literature review, identification, data construction,
 empirical analysis, robustness, writing, and revision. Note the stages that
 were AI-driven, the stages that involved direct human work, and the points at
-which the two interacted. Pull this from \texttt{submission/workflow.md}.
+which the two interacted.
+
+Also confirm the AFA eligibility conditions: the investigation began on or
+after 2026-06-01, the initial prompt was the first project act, the project was
+entirely new, all human work was performed by named authors, and each author
+complied with the lead-author and total-submission caps. Pull this from
+\texttt{submission/workflow.md},
+\texttt{submission/initial\_prompt.md}, and
+\texttt{submission/call\_requirements.md}.
 
 \section{Initial Prompt and Model Configuration}
 \label{app:prompt}
@@ -95,8 +103,8 @@ Reproduce the initial prompt verbatim, along with its issuance date, the
 target model, the interface used, attached materials, and the issuing author.
 Pull this from \texttt{submission/initial\_prompt.md} and a condensed version
 of \texttt{submission/model\_config.md}. The full configuration (system
-prompts, MCP servers, agent definitions, plugins) ships with the submission as
-supplementary material.
+prompts, MCP servers, agent definitions, plugins, settings, and autonomy
+ceilings) ships with the submission as supplementary material.
 
 \section{Human Contribution Log}
 \label{app:human}
@@ -106,6 +114,8 @@ distribution of activities by stage, and the headline percentages from the
 contribution report (code lines, writing words, documentation lines).
 The full session-level table lives in \texttt{submission/human\_time\_log.md};
 the percentages and method come from \texttt{submission/contribution\_report.md}.
+Direct human contributions outside prompts should be named here rather than
+left implicit.
 
 \section{Conversation Index}
 \label{app:conversations}

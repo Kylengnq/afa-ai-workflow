@@ -25,6 +25,20 @@
 
 - Kept the existing repo-root Codex plugin manifest in place for direct use from the repository root.
 - Added `.agents/plugins/marketplace.json` so the repo now exposes a marketplace-style discovery index.
-- Added `plugins/corbis-literature-starter-kit/.codex-plugin/plugin.json` as a lightweight packaged wrapper that points back to the repo's shared `.agents/skills/` directory and `.mcp.json`.
-- Verified JSON parsing for `.codex-plugin/plugin.json`, `.mcp.json`, `.agents/plugins/marketplace.json`, and `plugins/corbis-literature-starter-kit/.codex-plugin/plugin.json`.
+- Added `plugins/afa-ai-workflow-template/.codex-plugin/plugin.json` as a lightweight packaged wrapper that points back to the repo's shared `.agents/skills/` directory and `.mcp.json`.
+- Verified JSON parsing for `.codex-plugin/plugin.json`, `.mcp.json`, `.agents/plugins/marketplace.json`, and `plugins/afa-ai-workflow-template/.codex-plugin/plugin.json`.
 - Verified the packaged plugin resolves its `skills` path to `./.agents/skills/` and its `mcpServers` path to `./.mcp.json` successfully.
+
+## 2026-05-27 — AFA Call Compliance Template Audit
+
+- [x] Add a canonical AFA call requirements and compliance mapping file
+- [x] Expand submission templates for eligibility, data access, model configuration, workflow autonomy, and human labor documentation
+- [x] Remove example rows that could be mistaken for actual project records
+- [x] Sync README, assistant instructions, LaTeX appendix prompts, skills, commands, and plugin metadata with the full call
+- [x] Validate JSON metadata and scan the resulting diff
+
+## Review
+
+- Added `submission/call_requirements.md` with dates, organizers, ground rules, evaluation emphasis, and a final author checklist.
+- Updated `submission/` templates so the start-date rule, new-project requirement, author caps, named-author labor rule, all-conversation transcript rule, human time log, and human-vs-AI line report are explicit.
+- Updated README, `AGENTS.md`, `CLAUDE.md`, `SKILLS_USE_GUIDE.md`, LaTeX template notes, and plugin descriptions to match the AFA call and the current eleven-skill inventory.

@@ -1,7 +1,7 @@
 {
   "name": "afa-ai-workflow-template",
   "version": "0.2.0",
-  "description": "Submission template for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Bundles four submission-tracking skills alongside six Corbis-powered research skills.",
+  "description": "Submission template for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Bundles four submission-tracking skills, one calibration skill, and six Corbis-powered research skills.",
   "author": {
     "name": "Agentic Assets",
     "url": "https://www.corbis.ai/"

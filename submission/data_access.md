@@ -7,10 +7,6 @@ this to judge whether the AI workflow could in principle be reproduced.
 
 | Source | Type | Access method | Credentials scope | First accessed | Last accessed |
 |---|---|---|---|---|---|
-| e.g., Corbis | literature | MCP HTTP | personal API key | YYYY-MM-DD | YYYY-MM-DD |
-| e.g., WRDS / CRSP | market | PostgreSQL via SSH | institutional | YYYY-MM-DD | YYYY-MM-DD |
-| e.g., FRED | macro | REST API | public | YYYY-MM-DD | YYYY-MM-DD |
-|  |  |  |  |  |  |
 
 ## Data access at initial prompt
 
@@ -50,3 +46,11 @@ reference the data without violating its terms.
 Document any limits a reviewer should know: proprietary data that cannot be
 redistributed, credentials that expire, API rate limits, query windows, or data
 versions that may change after the submission deadline.
+
+## Example rows
+
+These examples are illustrative. Do not leave them as project records.
+
+- `| Corbis | literature | MCP HTTP | personal API key | 2026-06-01 | 2026-08-31 |`
+- `| WRDS / CRSP | market | PostgreSQL via SSH | institutional | 2026-06-10 | 2026-07-15 |`
+- `| FRED | macro | REST API | public | 2026-06-10 | 2026-07-15 |`
