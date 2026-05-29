@@ -156,11 +156,15 @@ For each accepted analog, write one sentence on parity:
 
 > "Candidate is [at parity / below / above] this archetype on [breadth / cleanness / surprise] because [...]"
 
-For each stalled analog, write one sentence on differentiation:
+For each stalled analog, read the paper's `failure_modes` array (built by `/calibrate-rubric`). The first tag is the *dominant* failure mode. Then write one sentence on the candidate's differentiation:
 
-> "Candidate differs from this stalled paper because [...]" — or, if it does *not* clearly differ, that becomes a kill reason.
+> "Stalled paper failed on [dominant failure mode]. Candidate has fixed this because [...]"
 
-**Apply Gate D:** If the candidate is below parity across all dimensions for all three accepted analogs, Importance is re-scored down by 1 (minimum 2) and the verdict caps at Strong Field Candidate. If the candidate fails to differentiate from at least one stalled analog, downgrade one tier.
+This is sharper than generic differentiation — it requires the candidate to demonstrate a specific fix for the actual cause of the analog's stalling. Merely avoiding the failure mode (e.g., "we have IV, they didn't") is not enough; the candidate must show the fix is real (the IV is strong, the mechanism is sharper, the displacement target is concrete, etc.).
+
+If the stalled paper has no `failure_modes` recorded (older calibration set, or `outcome: "uncertain"`), fall back to the generic differentiation prompt.
+
+**Apply Gate D:** If the candidate is below parity across all dimensions for all three accepted analogs, Importance is re-scored down by 1 (minimum 2) and the verdict caps at Strong Field Candidate. If the candidate fails to fix the dominant failure mode of at least one stalled analog, downgrade one tier.
 
 If `references/top_journal_calibration.json` is missing, skip this stage and cap the verdict at Strong Field Candidate.
 
@@ -188,37 +192,51 @@ Attach a confidence tag to the final novelty claim. Confidence is determined by 
 
 **Hard gate:** **Low confidence automatically caps the verdict at Strong Field Candidate.** This prevents confidently top-tier verdicts resting on thin search evidence. Surface the confidence tag and its reason on the Idea Card.
 
-## Stage 4: Two-editor desk-reject simulation (parallel)
+## Stage 4: Three-editor desk-reject simulation (parallel)
 
-For every candidate that survived Stages 1-3 with a non-Kill scoring trajectory, write two desk-reject letters.
+For every candidate that survived Stages 0-3 with a non-Kill scoring trajectory, write three desk-reject letters. The axis is *what kills papers at desk*, not subfield style.
+
+### Editor archetypes (functional)
+
+| Code | Editor type | Cares about | Voice |
+|---|---|---|---|
+| **ID** | Identification skeptic | Can the design support the causal claim? Pre-trends, instrument relevance, sample selection. | "If identification is decorative, the contribution dies." |
+| **INC** | Incrementality skeptic | Is this just a setting or data extension? What new economics does it produce that the closest paper does not? | "X but in country Y is not a contribution." |
+| **MECH** | Economic-mechanism skeptic | Does the mechanism distinguish itself from alternatives, with a sign or sufficient statistic? | "What does this rule out, and against what model?" |
+| **GI** | General-interest skeptic | Why does a broad finance audience care? Question importance, audience breadth. | "Will my generalist referee say 'so what?'" |
+| **EXEC** | Execution skeptic | Will this survive data construction, robustness, and replication policies? | "Plausible designs die in execution. Show me this won't." |
+
+### Selection rule (mandatory pair + topical choice)
+
+The simulation always includes:
+
+- **ID (identification skeptic)** — required.
+- **INC (incrementality skeptic)** — required.
+
+These two are the most common desk-reject reasons in finance and cannot be swapped out by framing. The third editor is chosen by the candidate's identification style and mechanism:
+
+| Candidate profile | Third editor |
+|---|---|
+| Theory-heavy, structural, sufficient statistic, asset-pricing test | **MECH** |
+| Quasi-experiment without a clear cross-audience implication | **GI** |
+| Measurement, descriptive, or institutional-mapping paper | **EXEC** |
+| Cross-sectional with clear economic mechanism | **MECH** |
+| Default if ambiguous | **GI** |
 
 ### Dispatch pattern
 
-The two editors are independent. Dispatch them in parallel via the Agent tool: one subagent for Editor A, one for Editor B, sent in the same message. Each subagent gets the candidate idea, displacement target, mechanism, identification style, and the editor persona below. Wait for both subagents to return before applying the verdict logic.
+Dispatch the three editors in parallel via the Agent tool, sent in the same message. Each subagent gets the candidate idea, displacement target, mechanism, identification, the editor archetype above, and the expected one-paragraph return format. Wait for all three to return before applying Gate E.
 
-### Editor A — empirical corporate / intermediaries editor
+### Verdict from the simulation (Gate E)
 
-Simulate an editor whose taste runs to Welch, Murphy, or Schoar:
+| Convincing letters | Action |
+|---|---|
+| 0 of 3 | Tier holds. |
+| 1 of 3 | Tier holds. Attach the convincing letter as a must-address risk. |
+| 2 of 3 | Downgrade one tier. |
+| 3 of 3 | Downgrade two tiers (e.g., Top Generalist Candidate → Revise Before Screening). |
 
-- Cares about: first-order question, institutional realism, identification, mechanism specificity.
-- Skeptical of: cute shocks, clever-but-niche datasets, designs that look more memorable than the question.
-- Voice: pragmatic, "tell me why this matters for how capital flows or how firms decide."
-
-Write one paragraph stating the single most likely desk-reject reason from Editor A's POV. State the reason plainly. If Editor A would advance to referees, write "advances" with one sentence on why.
-
-### Editor B — asset pricing / theory editor
-
-Simulate an editor whose taste runs to Fama, Stambaugh, or Lewellen:
-
-- Cares about: theoretical grounding, sign predictions, sufficient statistics, out-of-sample validation, model-empirics consistency.
-- Skeptical of: empirical-only stories, mechanism claims without theory, ad hoc proxies, papers that don't restrict predictions across markets or states.
-- Voice: theoretical, "what does this rule out, and against what model?"
-
-Same format. One paragraph, or "advances" with a sentence.
-
-**Apply Gate E:** Both letters convincing → downgrade one tier. One convincing, one weak → keep tier, flag the convincing letter as a must-address risk. Both weak → tier holds.
-
-Save both letters to `output/desk_reject_letters.md` regardless of outcome.
+Save all three letters to `output/desk_reject_letters.md` and to the lineage directory's `desk_rejects.md`.
 
 ## Kill criteria
 
@@ -253,11 +271,13 @@ Flag the idea as weak if one or more of these dominate:
 14. Run the four stress tests (sharper versions per Stage 2 above).
 15. **Stage 3:** Archetype benchmarking against accepted and stalled analogs.
 16. **Stage 3.5:** Scoped fresh search around the displacement target + mechanism. Compute the novelty confidence tag (High / Medium / Low) by rule.
-17. **Stage 4:** Two-editor desk-reject simulation.
+17. **Stage 4:** Three-editor desk-reject simulation (ID + INC + topical choice).
 18. Apply the gates A-E in order to determine the verdict. Low confidence caps at Strong Field Candidate.
 19. Apply the revision-feasibility rule (max 3 hurdles).
-20. Write the lineage directory at `ideas/<date>_<slug>/` (idea_card.md, gate_scores.json, desk_rejects.md required).
-21. Deliver the verdict with the expanded Idea Card, including displacement target with category, archetypes, novelty confidence, desk-reject letters, and gates cleared.
+20. For Top Generalist Candidate or Strong Field Candidate verdicts: produce the minimum viable empirical test (MVE) block. Missing/free-form data → downgrade one tier.
+21. For Kill or Revise verdicts: offer the user the structured human-override path. If invoked, save `override.md` with a falsifiable validation deadline.
+22. Write the lineage directory at `ideas/<date>_<slug>/` (idea_card.md, gate_scores.json, desk_rejects.md required; mve_block.md, override.md, etc. when generated).
+23. Deliver the verdict with the expanded Idea Card, including displacement target with category, archetypes, novelty confidence, desk-reject letters, gates cleared, and (if applicable) the MVE block.
 
 ## Idea generation guidance
 
@@ -358,6 +378,42 @@ When assessing journal fit, the accepted archetypes from the calibration set ser
 
 Use the template in `assets/idea-card-template.md`. Add a section for displacement target (with category), archetype benchmarking, novelty confidence tag, and the two desk-reject letters even if the template does not yet have those slots — the skill output is authoritative.
 
+## Minimum viable empirical test (MVE)
+
+For every candidate that survives the gates as a Top Generalist Candidate or Strong Field Candidate, produce a structured MVE block. This converts the verdict from "idea passes editorial gates" to "idea can be started on a specific dataset within 48 hours." Required fields:
+
+| Field | Constraint |
+|---|---|
+| Exact dataset | Must cite a paper in `output/paper_set.json` that used the dataset, or name the result of a `search_datasets` call. Free-form "Compustat-like data" without a specific source fails the block. |
+| Unit of observation | firm-year, country-month, household-quarter, etc. |
+| Treatment / shock / variation | The specific event or cross-sectional source of identification |
+| Main outcome | The variable that will appear in the headline regression |
+| First-stage variation | What the design exploits — instrument relevance, RD bandwidth, pre/post window, etc. |
+| One falsification test | What pattern in the data would be expected if the proposed mechanism is wrong |
+| One robustness test | The single most-likely-to-be-asked robustness check |
+| What can be checked in 48 hours | The earliest first-stage condition that could falsify the project before months are spent |
+| What would kill the project immediately | The condition that, if it fails to hold, means the project cannot be done in this design |
+
+If the model cannot produce specific values for any required field, downgrade the verdict by one tier — the gate failure is "did not commit to a runnable design." Hallucinated datasets (named but not citable in `paper_set.json` or `search_datasets` results) fail the same way.
+
+Save the MVE block to the lineage directory as `mve_block.md`.
+
+## Human override
+
+After any Kill or Reframe or Revise Before Screening verdict, the user may invoke a structured human override. The override is for cases where the user has private information the model lacks — proprietary data access, knowledge of a paper in revision, a regulatory development, a coauthor conversation. The override is *disciplined*, not a rubber stamp:
+
+| Field | Required |
+|---|---|
+| `private_info_summary` | One sentence describing what the user knows that the model does not |
+| `gate_challenged` | Which specific gate (A, B, C, D, E, or confidence) the user believes is wrong, and why the private info changes the verdict on that gate |
+| `validation_evidence` | A falsifiable, scheduled check that would confirm the private information (e.g., "verify proprietary data access by 2026-07-01", "confirm working paper exists on SSRN by date X", "obtain coauthor's institutional contact by date Y") |
+| `validation_deadline` | YYYY-MM-DD; cannot be more than 90 days out |
+| `next_action` | The first concrete step the user will take if the override is taken seriously |
+
+**Auto-revert rule:** If `validation_evidence` is not filed in the lineage directory as `override_validation.md` by `validation_deadline`, the override is automatically reverted to the model's original verdict in `gate_scores.json`. This prevents overrides from quietly becoming permanent loopholes.
+
+The override is saved as `override.md` in the idea's lineage directory and is auditable in the AFA submission trail. Reviewers can see every override the user made, the private information cited, the validation deadline, and whether the override held or reverted.
+
 ## Lineage directory
 
 For every idea screened by this skill (regardless of verdict), create a dated lineage directory so the repo accumulates an audit trail of which ideas were screened, which gates killed them, and which survived.
@@ -374,6 +430,9 @@ Optional artifacts (write when generated):
 - `paper_set_snapshot.json` — copy of `output/paper_set.json` at screening time, if it changed during this screening
 - `revision_plan.md` — written only if the verdict was Revise Before Screening; lists the specific gate(s) that failed and what would clear them
 - `graveyard_note.md` — written only if the verdict was Kill or Reframe; one paragraph on why and what pivot might work
+- `mve_block.md` — written only for Top Generalist Candidate or Strong Field Candidate verdicts; the structured 9-field minimum viable empirical test
+- `override.md` — written only if the user invoked the human override path; contains the override fields and the validation deadline
+- `override_validation.md` — written only if the user filed validation evidence for an override before the deadline
 
 The lineage directory is scoped to `/idea` runs only — do not create one for every brainstormed candidate. The slug should be a short kebab-case summary of the idea's question (≤ 40 characters). If an `ideas/<date>_<slug>/` directory already exists for a re-screen of the same idea, append `-v2`, `-v3`, etc. to the slug.
 

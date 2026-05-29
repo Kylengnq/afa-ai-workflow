@@ -24,8 +24,8 @@ benchmarking and will fall back to internal scoring only.
 | Acceptance window | No | Last 24 months from today |
 | Stalled-paper age threshold | No | 24+ months on SSRN with no top-3 placement |
 | Topic areas to cover | No | All of corporate finance, asset pricing, household finance, intermediaries, real estate |
-| Target acceptances per area | No | 4 (≈20 total) |
-| Target stalled per area | No | 4 (≈20 total) |
+| Target acceptances per area | No | 8 (≈40 total) |
+| Target stalled per area | No | 8 (≈40 total) |
 
 ## Steps
 
@@ -54,7 +54,7 @@ ground truth. Note when the classification is uncertain.
 
 ### Phase 3: Extract per-paper fields
 
-For all ~40 papers, run `get_paper_details_batch` (in groups of 25) and
+For all ~80 papers, run `get_paper_details_batch` (in groups of 25) and
 extract for each:
 
 | Field | Source | Notes |
@@ -64,20 +64,43 @@ extract for each:
 | `authors` | abstract | |
 | `year`, `journal` | abstract | |
 | `cited_by_count` | Corbis | |
-| `outcome` | manual | `accepted` or `stalled` |
+| `outcome` | manual | `accepted`, `stalled`, or `uncertain` |
 | `topic_area` | manual | one of `corporate`, `asset_pricing`, `household`, `intermediaries`, `real_estate`, `other` |
+| `field_tags` | manual | array of finer-grained subfield labels (e.g., `governance`, `cross_section`, `banking`, `mortgages`, `entrepreneurial_finance`, `behavioral`). A paper can carry multiple tags — many recent JF papers sit across two fields. |
 | `question` | one sentence | derived from abstract, question-first phrasing |
 | `contribution_claim` | one sentence | the paper's stated novelty |
 | `mechanism` | one phrase | the economic friction or force |
 | `identification_style` | label | one of `quasi-experiment`, `structural`, `measurement`, `theory`, `descriptive`, `cross-sectional`, `asset_pricing_test` |
 | `generating_lens` | label | best-guess Lens 1–11 from the research-idea-generator taxonomy |
 | `displacement_target` | one sentence | what model, paper, or empirical regularity this displaces (best-guess if not stated explicitly) |
+| `displacement_category` | label | which of the four categories the target fits: `paper`, `model_claim`, `empirical_regularity`, `assumption_convention_or_belief` |
 | `closest_papers_at_writing` | array of IDs | 3–5 closest works cited in the abstract or known from the area |
+| `failure_modes` | array (stalled only) | up to 2 tags from the failure-mode taxonomy below; first tag is the *dominant* cause. Empty for accepted. |
+| `calibration_confidence` | int 1-5 | how confident this entry is correctly classified (5 = clear top-3 acceptance, displacement target obvious; 1 = uncertain inclusion, may be misread) |
+| `selection_bias_note` | one sentence | a one-line note on what could be wrong about including this paper (e.g., "field-cycle peak — area was hot during the acceptance window," "small-sample stalled — may simply be too recent for top-3 timing") |
 
-For accepted papers, derive `displacement_target` from the abstract's "we
-show that..." or "contrary to..." statements. For stalled papers, derive it
-the same way and note if it's weak — the absence of a sharp displacement
-target is often *why* the paper stalled.
+**Failure-mode taxonomy** (use for stalled papers; up to 2 tags, first is dominant):
+
+| Tag | Meaning |
+|---|---|
+| `setting_variation_only` | The contribution is "X but in country/industry/period Y" without new economics |
+| `unclear_mechanism` | Empirical result documented; underlying economic channel not identified or distinguished |
+| `weak_identification` | The design cannot support the causal claim made; pre-trends, weak first-stage, etc. |
+| `no_displacement_target` | The paper does not name a specific belief, model, or paper it displaces |
+| `incremental_data_extension` | New data on an old question without changing identification or measurement in a first-order way |
+| `hard_to_interpret_null` | The paper's value depends on a particular sign; a null teaches nothing |
+| `insufficient_external_validity` | Results are local to a narrow population that doesn't generalize |
+| `execution_too_complex` | Design is so elaborate that referees can't audit it; or data construction is unreplicable |
+
+For accepted papers, derive `displacement_target` and `displacement_category`
+from the abstract's "we show that..." or "contrary to..." statements. For
+stalled papers, derive it the same way and note if it's weak — the absence of
+a sharp displacement target is often *why* the paper stalled, in which case
+`no_displacement_target` should be the dominant failure tag.
+
+When uncertain about the outcome label (e.g., the paper may still be under
+review at a top-3), mark `outcome: "uncertain"` and exclude from the
+calibration archetype-parity gate downstream.
 
 ### Phase 4: Write the calibration file with prebuilt indexes
 
@@ -85,9 +108,11 @@ Write `references/top_journal_calibration.json` with this schema. The three inde
 
 ```json
 {
+  "version": "2026-05",
   "built_at": "YYYY-MM-DD",
   "window_months": 24,
   "target_journals": ["Journal of Finance", "Journal of Financial Economics", "Review of Financial Studies"],
+  "selection_bias_summary": "One-paragraph note on systematic biases in this build: which areas are overweight relative to recent acceptances, which journals are underrepresented, what time window was active.",
   "papers": [
     {
       "id": "W...",
@@ -98,13 +123,18 @@ Write `references/top_journal_calibration.json` with this schema. The three inde
       "cited_by_count": 42,
       "outcome": "accepted",
       "topic_area": "corporate",
+      "field_tags": ["governance", "intermediaries"],
       "question": "...",
       "contribution_claim": "...",
       "mechanism": "...",
       "identification_style": "quasi-experiment",
       "generating_lens": 1,
       "displacement_target": "...",
-      "closest_papers_at_writing": ["W...", "W..."]
+      "displacement_category": "paper",
+      "closest_papers_at_writing": ["W...", "W..."],
+      "failure_modes": [],
+      "calibration_confidence": 5,
+      "selection_bias_note": "Clear top-3 acceptance with stated displacement; no flags."
     }
   ],
   "mechanism_index": {
@@ -119,12 +149,30 @@ Write `references/top_journal_calibration.json` with this schema. The three inde
     "intermediaries": ["W..."],
     "real_estate": ["W..."]
   },
+  "field_tag_index": {
+    "governance": ["W...", "W..."],
+    "cross_section": ["W..."],
+    "banking": ["W..."],
+    "mortgages": ["W..."],
+    "entrepreneurial_finance": ["W..."],
+    "behavioral": ["W..."]
+  },
   "identification_style_index": {
     "quasi-experiment": ["W..."],
     "structural": ["W..."],
     "measurement": ["W..."],
     "theory": ["W..."],
     "asset_pricing_test": ["W..."]
+  },
+  "failure_mode_index": {
+    "setting_variation_only": ["W..."],
+    "unclear_mechanism": ["W..."],
+    "weak_identification": ["W..."],
+    "no_displacement_target": ["W..."],
+    "incremental_data_extension": ["W..."],
+    "hard_to_interpret_null": ["W..."],
+    "insufficient_external_validity": ["W..."],
+    "execution_too_complex": ["W..."]
   }
 }
 ```
@@ -133,27 +181,36 @@ Order the `papers` array: accepted first, then stalled. Within each, group by `t
 
 ### Phase 4.5: Build the indexes
 
-After populating the `papers` array, derive the three indexes by iterating once over the papers:
+After populating the `papers` array, derive five indexes by iterating once over the papers:
 
 - `mechanism_index[m]` = list of paper IDs where `mechanism` is `m` (or contains `m` as a substring for compound mechanisms).
 - `topic_area_index[t]` = list of paper IDs where `topic_area` is `t`.
+- `field_tag_index[ft]` = list of paper IDs where `ft` appears in the paper's `field_tags` array.
 - `identification_style_index[i]` = list of paper IDs where `identification_style` is `i`.
+- `failure_mode_index[fm]` = list of paper IDs (stalled only) where `fm` appears in the paper's `failure_modes` array. Papers contribute to one entry per tag they carry.
 
-Normalize keys to lowercase snake_case before indexing (e.g., "Limited Attention" → `limited_attention`). Both `accepted` and `stalled` papers go into the same indexes — downstream skills split by `outcome` after the lookup, which is faster and keeps the index simple.
+Normalize keys to lowercase snake_case before indexing (e.g., "Limited Attention" → `limited_attention`). All papers (accepted, stalled, uncertain) go into the topic, field-tag, mechanism, and identification indexes — downstream skills split by `outcome` after the lookup. Only stalled papers appear in `failure_mode_index`.
 
 ### Phase 5: Sanity check
 
 Before declaring the calibration set built, verify:
 
-- At least 15 accepted and 10 stalled papers extracted.
-- Each topic area has at least 2 accepted and 2 stalled papers.
-- The 11 lens categories collectively cover at least 6 of the accepted
+- At least 30 accepted and 20 stalled papers extracted.
+- Each topic area has at least 4 accepted and 4 stalled papers.
+- The 11 lens categories collectively cover at least 7 of the accepted
   papers (no single lens dominates; if Lens 5 — policy shock — accounts for
-  more than 40% of acceptances, the topic coverage is biased and should be
+  more than 35% of acceptances, the topic coverage is biased and should be
   rebalanced).
 - Stalled papers' `displacement_target` is empty or weak for at least half
   the sample. (If stalled papers all have sharp displacement targets, the
   classification probably misidentified them.)
+- At least 4 of the 8 failure-mode tags appear at least twice. (A taxonomy
+  collapsing to one or two tags is unhealthy — the differentiation gate
+  downstream becomes useless if every stalled paper carries the same tag.)
+- `selection_bias_summary` is populated and names specific overweight areas
+  or time-window quirks.
+- At least 70% of papers have `calibration_confidence ≥ 3`. If most entries
+  are below 3, the calibration set is too speculative to anchor verdicts.
 
 ### Phase 6: Log
 

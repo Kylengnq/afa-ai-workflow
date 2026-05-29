@@ -230,6 +230,16 @@ For each surviving candidate, score on three dimensions:
 - If method is unfamiliar and no coauthor fills the gap: cap Executability at 3
 - If journal ambition is top generalist but Importance < 4: flag as "field-journal tier"
 
+**Binary preflight flags** (cheap to compute, prevent surprise failures in `/idea` later). For each candidate, record three yes/no checks alongside the 3-dim score:
+
+| Flag | Question | Required for top-tier |
+|---|---|---|
+| `contribution_verifiable` | Can the contribution claim be checked against a specific named paper in the literature? | Yes — `no` triggers Importance cap at 3 |
+| `bridge_plausible` | Does a credible theory-to-evidence bridge exist (quasi-experiment, structural, measurement, sufficient statistic, etc.) that a referee would recognize as appropriate to the question? | Yes — `no` blocks top-tier verdict |
+| `mechanism_named` | Can the economic mechanism be named in one phrase (information friction, search cost, contracting friction, limited attention, etc.) — not just a topic label? | Yes — `no` blocks top-tier verdict |
+
+These flags are not full /idea-grade scoring — they are preflight checks that the missing dimensions are at least *answerable*. A candidate that passes the 3-dim score but fails any flag is downgraded to Strong Field Candidate at most.
+
 ### Step 5c — Archetype benchmarking (only for candidates with composite ≥ 12)
 
 For each candidate scoring high enough to plausibly be top-tier, pull anchors from the prebuilt indexes in `references/top_journal_calibration.json`:
@@ -242,53 +252,73 @@ For each accepted analog, write one sentence on the candidate's parity:
 
 > "Candidate is [at parity / below / above] this archetype on [breadth / cleanness / surprise] because [...]"
 
-For each stalled analog, write one sentence on the candidate's differentiation:
+For each stalled analog, check its `failure_modes` array (built by `/calibrate-rubric`). The dominant failure mode is the first tag. Then write one sentence on the candidate's differentiation:
 
-> "Candidate differs from this stalled paper because [...]" — or, if the candidate does *not* clearly differ, that becomes a kill reason.
+> "Stalled paper failed on [dominant failure mode]. Candidate has fixed this because [...]"
 
-**Hard gate:** If the candidate is below parity on *all* three accepted analogs on *all* three of breadth/cleanness/surprise, **Importance is re-scored down by 1** (minimum 2). If the candidate fails to differentiate from at least one stalled analog, **the candidate is downgraded one tier** in Phase 7.
+The differentiation check is sharper than "candidate differs from stalled paper because…" — it requires naming the *specific failure* the stalled paper exhibited and demonstrating the candidate has fixed it. Merely avoiding the failure mode (e.g., "we don't have weak identification because we use IV") is not enough; the candidate must show the IV is *strong* and *relevant*, not just present.
+
+If the stalled paper has no `failure_modes` recorded (older calibration set, or `outcome: "uncertain"`), fall back to the generic differentiation prompt.
+
+**Hard gate:** If the candidate is below parity on *all* three accepted analogs on *all* three of breadth/cleanness/surprise, **Importance is re-scored down by 1** (minimum 2). If the candidate fails to fix the dominant failure mode of at least one stalled analog, **the candidate is downgraded one tier** in Phase 7.
 
 If `references/top_journal_calibration.json` is missing, skip this step but cap the verdict at Strong Field Candidate in Phase 7 and emit a warning.
 
 Select the top 10 by post-gate composite for the Idea Menu.
 
-## Phase 6: Two-editor desk-reject simulation (parallel)
+## Phase 6: Three-editor desk-reject simulation (parallel)
 
-For every candidate that survived Phase 5 with composite ≥ 12 *and* a named displacement target *and* archetype parity (or no calibration set), write two desk-reject letters.
+For every candidate that survived Phase 5 with composite ≥ 12 *and* a named displacement target *and* archetype parity (or no calibration set), write three desk-reject letters. The previous corporate-vs-asset-pricing split was a topic-area axis; the right axis is *what kills papers at desk*. Two of the three skeptics are mandatory because they are the two most common desk-reject reasons; the third is chosen by candidate type.
+
+### Editor archetypes (functional, not stylized)
+
+| Code | Editor type | Cares about | Voice |
+|---|---|---|---|
+| **ID** | Identification skeptic | "Can the design actually support the causal claim being made?" Pre-trends, instrument relevance, sample selection. | "If the identification is decorative the contribution dies regardless of the question." |
+| **INC** | Incrementality skeptic | "Is this just a setting or data extension? What new economics does it produce that the closest paper does not?" | "Adding country/period/dataset to an existing question is not a contribution." |
+| **MECH** | Economic-mechanism skeptic | "Does the proposed economic mechanism distinguish itself from obvious alternatives, with a sign prediction or sufficient statistic that pins it down?" | "What does this rule out, and against what model?" |
+| **GI** | General-interest skeptic | "Why should a broad finance audience care if they don't work in this corner?" Question importance, audience breadth. | "Will my generalist referee read this and say 'so what?'" |
+| **EXEC** | Execution skeptic | "Will this survive data construction, robustness, and replication policies? Is the empirical specification credibly auditable?" | "Plausible designs die in execution. Show me this one won't." |
+
+### Selection rule (mandatory pair + topical choice)
+
+For every candidate, the simulation always includes:
+
+- **ID (identification skeptic)** — required.
+- **INC (incrementality skeptic)** — required.
+
+These are the two most common desk-reject reasons across finance editors. They are not optional and cannot be swapped out by the candidate's framing.
+
+The third editor is chosen by the candidate's `identification_style` and mechanism:
+
+| Candidate profile | Third editor |
+|---|---|
+| Theory-heavy, structural, sufficient statistic, asset-pricing test | **MECH** (mechanism skeptic) |
+| Quasi-experiment without a clear cross-audience implication | **GI** (general-interest skeptic) |
+| Measurement, descriptive, or institutional-mapping paper | **EXEC** (execution skeptic) |
+| Cross-sectional with clear economic mechanism | **MECH** |
+| Default if ambiguous | **GI** |
+
+The selection rule is fixed; the candidate cannot route around its weakness. The third editor adds a fresh angle the mandatory pair may miss.
 
 ### Dispatch pattern
 
-The two editors are independent and the letters are short. Dispatch them in parallel via the Agent tool: one subagent for Editor A, one for Editor B, sent in the same message. Across multiple candidates, batch the dispatch — e.g., 5 candidates × 2 editors = 10 subagents in one message. Each subagent gets the candidate idea, displacement target, mechanism, identification, the editor persona below, and the expected one-paragraph return format.
+Dispatch the three editors in parallel via the Agent tool: three subagents per candidate, sent in the same message. Across multiple candidates, batch: e.g., 4 candidates × 3 editors = 12 subagents in one message. Each subagent gets the candidate idea, displacement target, mechanism, identification, the editor archetype above, and the expected one-paragraph return format.
 
-Wait for all subagents in a batch to return before applying the verdict logic at the end of this phase.
+Each subagent returns one paragraph stating the single most likely desk-reject reason from its archetype's POV, OR "advances" plus one sentence on why if the editor would in fact send the paper to referees.
 
-### Editor A — empirical corporate / intermediaries editor
-
-Simulate an editor whose taste runs to questions like Welch, Murphy, or Schoar:
-
-- Cares about: first-order question, institutional realism, identification, mechanism specificity.
-- Skeptical of: cute shocks, clever-but-niche datasets, designs that look more memorable than the question.
-- Voice: pragmatic, "tell me why this matters for how capital flows or how firms decide."
-
-Write one paragraph stating the single most likely desk-reject reason from Editor A's POV. State the reason plainly. If Editor A would in fact advance the paper to referees, write "advances" and one sentence on why.
-
-### Editor B — asset pricing / theory editor
-
-Simulate an editor whose taste runs to questions like Fama, Stambaugh, or Lewellen:
-
-- Cares about: theoretical grounding, sign predictions, sufficient statistics, out-of-sample validation, model-empirics consistency.
-- Skeptical of: empirical-only stories, mechanism claims without theory, ad hoc proxies, papers that don't restrict predictions across markets or states.
-- Voice: theoretical, "what does this rule out, and against what model?"
-
-Same format. One paragraph, or "advances" with a sentence.
+Wait for all subagents in a batch to return before applying the verdict logic.
 
 ### Verdict from the simulation
 
-- **Both letters convincing**: downgrade the candidate one tier (top-generalist → strong-field). Log both letters.
-- **One convincing, one weak**: flag for revision. Attach the convincing letter as a "must-address" risk. Tier holds.
-- **Both weak**: candidate clears the desk-reject gate. Tier holds.
+| Convincing letters | Action |
+|---|---|
+| 0 of 3 | Candidate clears the desk-reject gate. Tier holds. |
+| 1 of 3 | Flag for revision. Attach the convincing letter as a "must-address" risk. Tier holds. |
+| 2 of 3 | Downgrade the candidate one tier (top-generalist → strong-field). Log all three letters. |
+| 3 of 3 | Downgrade *two* tiers (top-generalist → workshop). Almost certainly an idea that needs to be killed or pivoted. |
 
-Save the letters to `output/desk_reject_letters.md` for every candidate that was simulated (not just survivors).
+Save all letters to `output/desk_reject_letters.md` for every candidate that was simulated.
 
 ## Phase 6.5: Top-tier novelty audit and confidence tag
 
@@ -342,11 +372,13 @@ If both Editor A and Editor B desk-reject letters were convincing, downgrade one
 
 ### Gate 6 — Lens-source discipline (applies to ranked positions, not gates)
 
-After gating, rank candidates. Then enforce: **at least 2 of the top 3 ranked positions must come from Lens 1 (practitioner gap), Lens 3 (first principles), or Lens 4 (unification).**
+After gating, rank candidates. Then enforce: **at least 2 of the top 3 ranked positions must come from Lens 1 (practitioner gap), Lens 3 (first principles), Lens 4 (unification), Lens 5 (policy shock), Lens 8 (mechanism decomposition), or Lens 9 (boundary conditions / equilibrium displacement).**
+
+The qualifying set was widened from {1, 3, 4} to {1, 3, 4, 5, 8, 9} because policy-shock, mechanism-decomposition, and boundary-condition ideas regularly anchor recent top-3 acceptances when executed well, and the narrower rule produced false negatives. The non-qualifying lenses (2, 6, 7, 10, 11) remain excluded — these are the lens types that produce clever framings but rarely carry a top-generalist contribution on their own.
 
 If the top 3 violate this rule (e.g., all three are Lens 6 literature-gap ideas), reshuffle:
 
-- Find the highest-ranked surviving Lens-1/3/4 candidate.
+- Find the highest-ranked surviving Lens-1/3/4/5/8/9 candidate.
 - Promote it into the top 3, displacing the lowest of the existing top 3.
 - Repeat if the rule still isn't satisfied.
 
@@ -366,7 +398,26 @@ Be honest. Most ideas are Strong Field tier. Labeling everything as top-generali
 
 ## Phase 8: Produce the Idea Menu
 
-Use `assets/idea-menu-template.md`. Present all 10 surviving ideas plus a "Graveyard" section showing 3 rejected ideas with reasons. The graveyard teaches the user how the filter works and what makes ideas fail in this topic area.
+Use `assets/idea-menu-template.md`. Present:
+- 10 ranked surviving ideas
+- 1 **Wildcard** idea (see Wildcard section below)
+- A **Graveyard** section showing 3 rejected ideas with reasons
+
+The graveyard teaches the user how the filter works and what makes ideas fail in this topic area.
+
+### Wildcard slot (required)
+
+Hierarchical gates plus archetype parity squeeze the output toward calibration-set patterns. That is mostly the right discipline, but it suppresses high-variance ideas that *failed exactly one gate* and could become important if reframed. The Wildcard slot creates a deliberate channel for these.
+
+Choose **one** candidate that failed exactly one gate (not more) and has the highest upside if reframed — typically a measurement-first idea, a contrarian idea against the calibration set, or a Lens 2 (cross-pollination) idea that would carry a fresh framing.
+
+Wildcard idea card includes:
+- The candidate idea (one-sentence question)
+- Which gate it failed
+- A one-sentence reframing path (what specifically would have to change to clear the failed gate)
+- An explicit label `WILDCARD — not gated, requires re-screening before promotion`
+
+**Hard rule:** A Wildcard candidate **cannot be promoted to Top Generalist Candidate or Strong Field Candidate without re-running the full gate sequence** (Phase 3 through Phase 7) on the reframed version. The label is a flag for human inspection, not a tier.
 
 Present all 10 ideas with:
 - Rank
@@ -416,6 +467,22 @@ For the three highest-ranked ideas, provide an Idea Sketch with:
 **Why this idea beats the other top candidates**: One sentence on why this ranks above the alternatives.
 
 **Why this idea is not dominated by a cleaner adjacent project**: One sentence.
+
+**Minimum viable empirical test (MVE):** Required for any top-3 idea that is at Top Generalist Candidate or Strong Field Candidate tier. The MVE block converts the idea from "interesting concept" to "researchable project" and forces the model to commit to specifics that would have to hold for the project to work. Required fields:
+
+| Field | Constraint |
+|---|---|
+| Exact dataset | Must cite a paper in `output/paper_set.json` or name the result of a `search_datasets` call. Free-form "Compustat-like data" without a specific source fails the block. |
+| Unit of observation | firm-year, country-month, household-quarter, etc. |
+| Treatment / shock / variation | The specific event or cross-sectional source of identification |
+| Main outcome | The variable that will appear in the headline regression |
+| First-stage variation | What the design exploits — instrument relevance, RD bandwidth, pre/post window, etc. |
+| One falsification test | What pattern in the data would be expected if the proposed mechanism is wrong |
+| One robustness test | The single most-likely-to-be-asked robustness check |
+| What can be checked in 48 hours | The earliest first-stage condition that could falsify the project before months are spent |
+| What would kill the project immediately | The condition that, if it fails to hold, means the project cannot be done in this design |
+
+If the model cannot produce specific values for any required field, the idea is downgraded to Workshop tier — the gate failure is "did not commit to a runnable design." Hallucinated datasets fail the same way and are flagged in the Wildcard slot if they have other merits.
 
 ## Phase 10: Recommend next steps
 

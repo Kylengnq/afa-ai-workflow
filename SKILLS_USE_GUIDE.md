@@ -99,9 +99,17 @@ If your assistant supports repo-defined agents, use the paper-reader prompt:
 
 - **Novelty confidence tag (rule-based).** Every verdict carries High / Medium / Low confidence, determined by paper_set coverage, calibration mechanism match, and number of targeted searches that ran. **Low confidence automatically caps the verdict at Strong Field Candidate.** This is not LLM self-assessment — the thresholds are explicit in the skill files.
 
-- **Two-editor desk-reject.** Before issuing a Top Generalist Candidate, the skill writes desk-reject letters from two editor archetypes (empirical corporate vs. asset pricing/theory) in parallel. Both convincing → tier downgrade.
+- **Three-editor desk-reject.** Before issuing a Top Generalist Candidate, the skill writes desk-reject letters from three functional editor archetypes in parallel: an identification skeptic (mandatory), an incrementality skeptic (mandatory), and a third chosen by the candidate's type (mechanism skeptic, general-interest skeptic, or execution skeptic). 2+ convincing → tier downgrade; 3 of 3 → two-tier downgrade.
 
-- **Lens-source discipline.** Ideas come from 11 generative lenses. ≥2 of the top 3 must come from Lens 1 (practitioner gap), Lens 3 (first principles), or Lens 4 (unification). Lens 10 (new data × old question) is hard-capped at Strong Field.
+- **Failure-mode benchmarking.** Stalled papers in the calibration set are tagged with up to 2 of 8 failure modes (setting variation only, unclear mechanism, weak identification, no displacement target, incremental data extension, hard-to-interpret null, insufficient external validity, execution too complex). To clear the differentiation gate, the candidate must show it has *fixed* the dominant failure mode of comparable stalled analogs — not merely avoid sharing it.
+
+- **Lens-source discipline.** Ideas come from 11 generative lenses. ≥2 of the top 3 must come from Lens 1 (practitioner gap), Lens 3 (first principles), Lens 4 (unification), Lens 5 (policy shock), Lens 8 (mechanism decomposition), or Lens 9 (boundary conditions). Lens 10 (new data × old question) is hard-capped at Strong Field.
+
+- **Minimum viable empirical test (MVE).** For every Top Generalist or Strong Field Candidate, `/idea` produces a 9-field block specifying the dataset (must cite `output/paper_set.json` or a `search_datasets` result — no hallucinated data), unit of observation, treatment, outcome, first-stage variation, falsification test, robustness test, what can be checked in 48 hours, and what would kill the project. Missing or free-form data → tier downgrade.
+
+- **Wildcard slot in `/brainstorm`.** Reserved for one candidate that failed exactly one gate but has high upside if reframed. Labeled "WILDCARD — not gated, requires re-screening before promotion." Cannot be promoted to Top Generalist Candidate without re-running every gate.
+
+- **Human override.** After Kill or Revise verdicts in `/idea`, the user can invoke a disciplined override path: name the private information, name the gate being challenged, file a falsifiable validation deadline (≤ 90 days). Auto-reverts to the model verdict if validation evidence is not filed by the deadline.
 
 - **Hierarchical gates.** Tier labels are determined by gates passed, not by a smoothed total score. Importance ≥ 4 → Contribution ≥ 4 → Bridge ≥ 4 → displacement named → archetype parity → fresh-search novelty audit → desk-reject survival → confidence ≥ Medium. Failing any caps the verdict.
 
