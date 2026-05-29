@@ -1,0 +1,18 @@
+Migration inventory:
+  source: ./.claude/
+  target: ./.codex/
+  instructions: AGENTS.md reviewed for Codex semantics
+  skills: 11 Claude skills refreshed under .agents/skills/
+  command wrappers: 11 source commands exposed as Codex compatibility skills
+  subagents: paper-reader converted to .codex/agents/paper-reader.toml
+  mcp servers: corbis configured in .codex/config.toml and .codex/mcp.json
+  hooks: Codex-native hooks configured in .codex/hooks.json and .codex/hooks/
+
+Post-migration fixes:
+  resolved: AGENTS.md rewritten for Codex instead of provider-specific slash-command and hook assumptions
+  resolved: verify-citations unsupported skill metadata note removed
+  resolved: source-command skills rewritten to use natural-language Codex inputs instead of provider placeholders
+  resolved: paper-reader custom agent rewritten without provider-specific permission text or unsupported model/color fields
+  resolved: Corbis MCP switched to bearer_token_env_var with timeouts
+  resolved: hooks switched to Codex input schema and canonical [features].hooks
+  resolved: local marketplace now points at the repo-root Codex plugin manifest

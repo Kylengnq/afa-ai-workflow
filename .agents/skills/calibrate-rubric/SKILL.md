@@ -174,10 +174,10 @@ during their archetype benchmarking phase. For each candidate idea, they
 pick 3 accepted analogs and 2 stalled analogs sharing the candidate's
 `mechanism`, `identification_style`, or `topic_area`, and write a one-line
 parity claim ("at parity / below / above") against each. The parity
-verdict is one of the gates for the "Top Generalist Go" label.
+verdict is one of the gates for the "Top Generalist Candidate" label.
 
 If the file does not exist, both skills warn the user and skip archetype
-benchmarking, downgrading any "Top Generalist Go" verdict to "Strong Field
+benchmarking, downgrading any "Top Generalist Candidate" verdict to "Strong Field
 Go" with a note that the calibration set is missing.
 
 ## Tool integration (Corbis MCP)

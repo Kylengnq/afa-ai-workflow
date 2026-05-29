@@ -1,7 +1,7 @@
 {
   "name": "afa-ai-workflow-template",
   "version": "0.2.0",
-  "description": "Submission template for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Bundles four submission-tracking skills (init-submission, log-conversation, log-human-time, contribution-report), one calibration skill, and six Corbis-powered research skills.",
+  "description": "Submission template for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Bundles submission-tracking skills, calibration, Corbis-powered research skills, command-compatibility wrappers, MCP config, and lifecycle hooks.",
   "author": {
     "name": "Agentic Assets",
     "url": "https://www.corbis.ai/"
@@ -23,11 +23,12 @@
     "literature-review"
   ],
   "skills": "./.agents/skills/",
-  "mcpServers": "./.mcp.json",
+  "mcpServers": "./.codex/mcp.json",
+  "hooks": "./.codex/hooks.json",
   "interface": {
     "displayName": "AFA 2027 AI Workflow Submission Template",
     "shortDescription": "AFA 2027 AI workflow submission scaffold and research skills.",
-    "longDescription": "A Codex plugin for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Provides four submission-tracking skills that maintain the initial prompt, conversation transcripts, human time log, and contribution report under submission/, plus one calibration skill and six research skills for literature review, positioning, landscape figures, idea generation, idea screening, and citation verification. Includes the Corbis MCP for literature search.",
+    "longDescription": "A Codex plugin for the AFA 2027 Special Session on Papers Written with Generative AI Workflows. Provides submission-tracking skills that maintain the initial prompt, conversation transcripts, human time log, and contribution report under submission/, plus calibration and research skills for literature review, positioning, landscape figures, idea generation, idea screening, and citation verification. Includes Corbis MCP config and Codex lifecycle hooks.",
     "developerName": "Agentic Assets",
     "category": "Research",
     "capabilities": [

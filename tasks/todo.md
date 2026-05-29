@@ -4,15 +4,15 @@
 
 - [x] Inspect the repo metadata, existing MCP config, and available skill directories
 - [x] Create a root Codex plugin manifest at `.codex-plugin/plugin.json`
-- [x] Point the plugin at `.agents/skills/` and the existing `.mcp.json`
+- [x] Point the plugin at `.agents/skills/` and the Codex MCP config
 - [x] Validate the JSON files parse cleanly and the manifest shape matches the Codex plugin spec
 - [x] Add a short review section with what changed and verification results
 
 ## Review
 
 - Added `.codex-plugin/plugin.json` so the repository can be used as a Codex plugin with its bundled research skills.
-- Wired the plugin to `./.agents/skills/` and `./.mcp.json`.
-- Normalized `.mcp.json` to use the `corbis` server name and `${CORBIS_MCP_API_KEY}` placeholder, matching the repo's Codex setup guide.
+- Wired the plugin to `./.agents/skills/` and `./.codex/mcp.json`.
+- Added Codex-native Corbis MCP config that uses `bearer_token_env_var = "CORBIS_MCP_API_KEY"`, matching the repo's Codex setup guide.
 - Verified both JSON files parse successfully with `python3`.
 
 ## 2026-04-15 — Codex Plugin Discovery Audit
@@ -25,9 +25,9 @@
 
 - Kept the existing repo-root Codex plugin manifest in place for direct use from the repository root.
 - Added `.agents/plugins/marketplace.json` so the repo now exposes a marketplace-style discovery index.
-- Added `plugins/afa-ai-workflow-template/.codex-plugin/plugin.json` as a lightweight packaged wrapper that points back to the repo's shared `.agents/skills/` directory and `.mcp.json`.
-- Verified JSON parsing for `.codex-plugin/plugin.json`, `.mcp.json`, `.agents/plugins/marketplace.json`, and `plugins/afa-ai-workflow-template/.codex-plugin/plugin.json`.
-- Verified the packaged plugin resolves its `skills` path to `./.agents/skills/` and its `mcpServers` path to `./.mcp.json` successfully.
+- Pointed `.agents/plugins/marketplace.json` at the repo root so the root `.codex-plugin/plugin.json` is the single Codex plugin manifest.
+- Verified JSON parsing for `.codex-plugin/plugin.json`, `.codex/mcp.json`, `.codex/hooks.json`, and `.agents/plugins/marketplace.json`.
+- Verified the root plugin resolves its `skills` path to `./.agents/skills/` and its `mcpServers` path to `./.codex/mcp.json` successfully.
 
 ## 2026-05-27 — AFA Call Compliance Template Audit
 

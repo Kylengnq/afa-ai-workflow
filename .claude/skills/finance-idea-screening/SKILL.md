@@ -11,7 +11,7 @@ Turn rough topics into credible paper ideas or kill weak ideas early. Calibrated
 
 Before scoring any candidate, read `references/top_journal_calibration.json` if it exists. This file is built by the `calibrate-rubric` skill and contains ~20 recent JF/JFE/RFS acceptances and ~20 stalled working-paper analogs.
 
-The calibration set is the external anchor for the "Top Generalist Go" verdict. Without it, the skill caps at "Strong Field Go" and warns the user.
+The calibration set is the external anchor for the "Top Generalist Candidate" verdict. Without it, the skill caps at "Strong Field Candidate" and warns the user.
 
 If the file is missing, suggest running `/calibrate-rubric` first. If the user declines, proceed under the cap.
 
@@ -30,15 +30,25 @@ If two or more answers are weak, return **Revise** or **Kill** before investing 
 
 ## Stage 1: Displacement target (hard gate)
 
-Before any scoring, the candidate idea must name in one sentence what it would displace: a specific paper (author, year), a specific model claim (e.g., "the Diamond-Dybvig assumption that all withdrawals are equally informative"), or a specific empirical regularity (e.g., "the documented Monday effect").
-
-Use the prompt:
+Before any scoring, the candidate idea must name in one sentence what it would displace. Use the prompt:
 
 > "If this paper is accepted, what gets struck out of next year's PhD finance reading list, or which claim in a canonical model becomes wrong?"
 
-**Hard gate:** If the candidate cannot name a concrete displacement target, the verdict is capped at **Strong Field Go** at best. Vague claims ("it would change how we think about X") do not count. The skill shows the user the median displacement target from the calibration set's accepted papers in this topic area as a benchmark, and asks the user to either match that bar or accept the cap.
+A displacement target must fall into one of four concrete categories, and each must include a **falsifiable counterfactual** — what would change about the literature if the paper succeeded:
 
-Record the displacement target on the Idea Card.
+1. **A named paper** (author, year): e.g., "Stambaugh & Yuan (2017) — the claim that mispricing is captured by sentiment-orthogonal characteristics."
+2. **A model claim**: e.g., "the Diamond-Dybvig assumption that all withdrawals are equally informative."
+3. **An empirical regularity**: e.g., "the documented Monday effect in stock returns."
+4. **A maintained assumption, measurement convention, or decision-relevant belief.** This category is admissible only with the following structure:
+   - For a **maintained assumption**: cite at least one published paper that explicitly maintains it (so the assumption is demonstrably held by the literature, not invented to be displaced).
+   - For a **measurement convention**: name the canonical measure, the proposed alternative, and the expected direction of the bias.
+   - For a **decision-relevant belief**: name the audience that holds it (regulator, manager class, investor type), and cite evidence the belief is actually held (a survey, a Fed report, an industry practice, a policy document).
+
+This fourth category exists because many recent JF/JFE/RFS acceptances displace maintained assumptions, measurement conventions, or institutional beliefs without naming a single prior paper to displace (e.g., Chodorow-Reich's local-multiplier measurement, Koijen & Yogo's demand-system framework, Mian & Sufi's household-debt measurement).
+
+**Hard gate:** If the candidate cannot name a concrete displacement target that fits one of the four categories *and* states a falsifiable counterfactual, the verdict is capped at **Strong Field Candidate** at best. Vague claims ("it would change how we think about X") do not count. Category 4 claims without citation evidence or a named alternative also do not count. The skill shows the user the median displacement target from the calibration set's accepted papers in this topic area as a benchmark.
+
+Record the displacement target and its category on the Idea Card.
 
 ## What counts as a strong idea
 
@@ -75,19 +85,19 @@ After scoring, apply the gates in order. Each gate caps the verdict.
 
 ### Gate A — Displacement target
 
-If Stage 1 found no concrete displacement target, maximum verdict is **Strong Field Go** regardless of all other scores.
+If Stage 1 found no concrete displacement target, maximum verdict is **Strong Field Candidate** regardless of all other scores.
 
 ### Gate B — Importance ≥ 4
 
-Required for Top Generalist Go. If Importance < 4, maximum verdict is Strong Field Go.
+Required for Top Generalist Candidate. If Importance < 4, maximum verdict is Strong Field Candidate.
 
 ### Gate C — Contribution ≥ 4 and Bridge ≥ 4
 
-Required for Top Generalist Go. Either gate failing pulls the verdict down.
+Required for Top Generalist Candidate. Either gate failing pulls the verdict down.
 
 ### Gate D — Archetype parity (see Stage 3 below)
 
-If the candidate is below parity on all three accepted archetypes on all dimensions of breadth/cleanness/surprise, maximum verdict is Strong Field Go.
+If the candidate is below parity on all three accepted archetypes on all dimensions of breadth/cleanness/surprise, maximum verdict is Strong Field Candidate.
 
 ### Gate E — Desk-reject survival (see Stage 4 below)
 
@@ -97,10 +107,12 @@ If both Editor A and Editor B desk-reject letters are convincing, downgrade one 
 
 | Verdict | Gates required |
 |---|---|
-| **Top Generalist Go** | All gates A-E cleared |
-| **Strong Field Go** | All dimensions ≥ 3, total ≥ 18, but one or more gates A-D failed |
-| **Revise** | Total 15-20 with a clear path on the weak dimensions, or 1 gate failed with a fixable cause |
-| **Kill / Pivot** | Importance < 3, contribution is mostly setting variation, the bridge cannot distinguish mechanisms, more than 3 essential hurdles, total ≤ 14, or any dimension = 1 |
+| **Top Generalist Candidate** | All gates A-E cleared; novelty confidence ≥ Medium |
+| **Strong Field Candidate** | All dimensions ≥ 3, total ≥ 18, but one or more gates A-E failed (or novelty confidence is Low) |
+| **Revise Before Screening** | Total 15-20 with a clear path on the weak dimensions, or 1 gate failed with a fixable cause |
+| **Kill or Reframe** | Importance < 3, contribution is mostly setting variation, the bridge cannot distinguish mechanisms, more than 3 essential hurdles, total ≤ 14, or any dimension = 1 |
+
+**On the "Candidate" label:** The tier names use *Candidate*, not *Go*. The verdict is a screening pass — the idea has cleared the structural tests that top-3 papers usually clear — not a publishability prediction. The candidate still requires human taste, real data inspection, and execution. No rubric can certify JF/JFE/RFS-worthiness; the calibration set only documents what the recent frontier looks like.
 
 ### Revision-feasibility rule
 
@@ -148,9 +160,33 @@ For each stalled analog, write one sentence on differentiation:
 
 > "Candidate differs from this stalled paper because [...]" — or, if it does *not* clearly differ, that becomes a kill reason.
 
-**Apply Gate D:** If the candidate is below parity across all dimensions for all three accepted analogs, Importance is re-scored down by 1 (minimum 2) and the verdict caps at Strong Field Go. If the candidate fails to differentiate from at least one stalled analog, downgrade one tier.
+**Apply Gate D:** If the candidate is below parity across all dimensions for all three accepted analogs, Importance is re-scored down by 1 (minimum 2) and the verdict caps at Strong Field Candidate. If the candidate fails to differentiate from at least one stalled analog, downgrade one tier.
 
-If `references/top_journal_calibration.json` is missing, skip this stage and cap the verdict at Strong Field Go.
+If `references/top_journal_calibration.json` is missing, skip this stage and cap the verdict at Strong Field Candidate.
+
+## Stage 3.5: Top-tier novelty audit and confidence tag
+
+Two final checks before tier assignment, applied only if the candidate is still on track for a top-tier verdict (all Stage 0-3 gates clearing or recoverable).
+
+### Step 3.5a — Scoped fresh search
+
+Even with paper-set-first triage, the initial paper set can have blind spots. For the highest-stakes verdict, fire one final `search_papers` call scoped to the **displacement target plus the mechanism**, not generic topic terms. Use `matchCount: 8`, `compact: true`.
+
+Read the top 3 results. If any one of them looks like a near-duplicate of the candidate's question + mechanism + identification combination, the candidate cannot receive Top Generalist Candidate — cap at Strong Field Candidate and surface the near-duplicate paper to the user.
+
+This is a single belt-and-suspenders check, not a re-screen. Tangentially related work does not block the verdict.
+
+### Step 3.5b — Novelty confidence tag
+
+Attach a confidence tag to the final novelty claim. Confidence is determined by rule, not LLM self-assessment:
+
+| Tag | Required conditions (all three) |
+|---|---|
+| **High** | Calibration set has ≥ 1 mechanism-matched anchor; paper_set has ≥ 20 papers in the candidate's area; ≥ 2 targeted Corbis searches ran (Stage 2 + Stage 3.5a) and surfaced fewer than 5 close hits combined |
+| **Medium** | Any one of the High conditions fails |
+| **Low** | Paper_set has < 10 papers in the area, OR no targeted Stage 2 search ran, OR Stage 3.5a was skipped |
+
+**Hard gate:** **Low confidence automatically caps the verdict at Strong Field Candidate.** This prevents confidently top-tier verdicts resting on thin search evidence. Surface the confidence tag and its reason on the Idea Card.
 
 ## Stage 4: Two-editor desk-reject simulation (parallel)
 
@@ -216,10 +252,12 @@ Flag the idea as weak if one or more of these dominate:
 13. Apply the six-dimension scoring rubric.
 14. Run the four stress tests (sharper versions per Stage 2 above).
 15. **Stage 3:** Archetype benchmarking against accepted and stalled analogs.
-16. **Stage 4:** Two-editor desk-reject simulation.
-17. Apply the gates A-E in order to determine the verdict.
-18. Apply the revision-feasibility rule (max 3 hurdles).
-19. Deliver the verdict with the expanded Idea Card, including displacement target, archetypes, desk-reject letters, and gates cleared.
+16. **Stage 3.5:** Scoped fresh search around the displacement target + mechanism. Compute the novelty confidence tag (High / Medium / Low) by rule.
+17. **Stage 4:** Two-editor desk-reject simulation.
+18. Apply the gates A-E in order to determine the verdict. Low confidence caps at Strong Field Candidate.
+19. Apply the revision-feasibility rule (max 3 hurdles).
+20. Write the lineage directory at `ideas/<date>_<slug>/` (idea_card.md, gate_scores.json, desk_rejects.md required).
+21. Deliver the verdict with the expanded Idea Card, including displacement target with category, archetypes, novelty confidence, desk-reject letters, and gates cleared.
 
 ## Idea generation guidance
 
@@ -310,21 +348,43 @@ When assessing journal fit, the accepted archetypes from the calibration set ser
 - Do not let enthusiasm for a topic substitute for identification feasibility.
 - Do not let enthusiasm for a dataset or shock substitute for question importance.
 - Score importance and contribution honestly. Most ideas are 2-3 on these dimensions, not 4-5.
-- **No displacement target → no Top Generalist verdict.** This is the single hardest gate.
+- **No displacement target → no Top Generalist verdict.** This is the single hardest gate. Category 4 (assumption / measurement convention / decision-relevant belief) requires citation evidence and a named alternative; vague "challenges conventional wisdom" does not qualify.
+- **Low novelty confidence → no Top Generalist verdict.** Rule-based; cannot be overridden by LLM self-assessment.
 - **No calibration set → no Top Generalist verdict.** Suggest `/calibrate-rubric` and proceed under the cap.
 - **Always check `output/paper_set.json` before firing a fresh `search_papers` call.** The architecture and frontier searches in Step 2 usually populate enough of the closest-paper space that the novelty verification chain in Step 3 collapses to a batch-detail call.
 - **Use `compact: true` on every `search_papers` call** except when the search is explicitly for detail (then use `get_paper_details_batch` instead).
 
 ## Output format
 
-Use the template in `assets/idea-card-template.md`. Add a section for displacement target, archetype benchmarking, and the two desk-reject letters even if the template does not yet have those slots — the skill output is authoritative.
+Use the template in `assets/idea-card-template.md`. Add a section for displacement target (with category), archetype benchmarking, novelty confidence tag, and the two desk-reject letters even if the template does not yet have those slots — the skill output is authoritative.
+
+## Lineage directory
+
+For every idea screened by this skill (regardless of verdict), create a dated lineage directory so the repo accumulates an audit trail of which ideas were screened, which gates killed them, and which survived.
+
+Directory: `ideas/<YYYY-MM-DD>_<short-slug>/`
+
+Required artifacts (always write):
+- `idea_card.md` — the full Idea Card as produced by this skill
+- `gate_scores.json` — structured record of the six-dimension scores, every gate's verdict, the novelty confidence tag, and the final verdict
+- `desk_rejects.md` — the verbatim Editor A and Editor B letters
+
+Optional artifacts (write when generated):
+- `closest_papers.json` — Corbis IDs of the 3-5 closest papers identified during novelty verification
+- `paper_set_snapshot.json` — copy of `output/paper_set.json` at screening time, if it changed during this screening
+- `revision_plan.md` — written only if the verdict was Revise Before Screening; lists the specific gate(s) that failed and what would clear them
+- `graveyard_note.md` — written only if the verdict was Kill or Reframe; one paragraph on why and what pivot might work
+
+The lineage directory is scoped to `/idea` runs only — do not create one for every brainstormed candidate. The slug should be a short kebab-case summary of the idea's question (≤ 40 characters). If an `ideas/<date>_<slug>/` directory already exists for a re-screen of the same idea, append `-v2`, `-v3`, etc. to the slug.
+
+This directory is the user's idea ledger over time: a place to retrospectively analyze which gates kill most projects, which lenses produced the most Top Generalist Candidates, and how ideas evolved through re-screenings.
 
 ## Next steps to suggest
 
 At the end of the screen, explicitly tell the user what to do next based on the verdict:
 
-1. **Top Generalist Go**: "Strong verdict. Next, run `/lit-search <idea>` to deepen the related-literature positioning before drafting the contribution paragraph. After that, consider `/data-plan` (if available in your skill set) or start the data construction. Log this screening conversation with `/log-conversation`."
-2. **Strong Field Go**: "Solid verdict but capped below top-3. The gate(s) that failed tell you where to push — typically Importance or displacement target. Options: (a) tighten the framing to clear the failed gate and re-run `/idea`, (b) accept the strong-field target and run `/lit-search` to position, or (c) run `/brainstorm` in the same topic area to find a sharper variant."
+1. **Top Generalist Candidate**: "Strong verdict. Next, run `/lit-search <idea>` to deepen the related-literature positioning before drafting the contribution paragraph. After that, consider `/data-plan` (if available in your skill set) or start the data construction. Log this screening conversation with `/log-conversation`."
+2. **Strong Field Candidate**: "Solid verdict but capped below top-3. The gate(s) that failed tell you where to push — typically Importance or displacement target. Options: (a) tighten the framing to clear the failed gate and re-run `/idea`, (b) accept the strong-field target and run `/lit-search` to position, or (c) run `/brainstorm` in the same topic area to find a sharper variant."
 3. **Revise**: "The idea has substance but at least one essential hurdle. Address the specific gate that failed (often Bridge or Contribution), then re-run `/idea`. If the failed gate is structural (e.g., no clean identification possible), pivot via `/brainstorm` rather than iterating."
 4. **Kill / Pivot**: "The idea does not survive screening. Run `/brainstorm <topic area>` to generate alternatives in the same space, or `/lit-review <topic>` first if you want a deeper map before regenerating ideas."
 5. **Always remind**: "Log this screening conversation with `/log-conversation` and the time spent reviewing the verdict with `/log-human-time`."

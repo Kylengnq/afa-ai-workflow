@@ -1,5 +1,5 @@
 ---
-name: literature-landscape
+name: "literature-landscape"
 description: "Generate figures that visualize patterns in an academic literature: publication trends, citation landmarks, journal distributions, thematic evolution, method timelines, and coverage gap maps. Uses Corbis search data and Python/matplotlib."
 ---
 

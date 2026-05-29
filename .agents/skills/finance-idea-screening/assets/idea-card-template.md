@@ -45,7 +45,7 @@
 ## Best journal track
 [Top generalist, strong field, or specialist — and why. Name 2-3 recent papers in the target journal that share a similar structure.]
 
-## Verdict: Top Generalist Go / Field-Journal Go / Revise / Kill
+## Verdict: Top Generalist Candidate / Field-Journal Go / Revise / Kill
 
 ## Essential hurdles (at most 3)
 [List the hurdles a referee would raise. If more than 3 are essential, default to Kill/Pivot.]

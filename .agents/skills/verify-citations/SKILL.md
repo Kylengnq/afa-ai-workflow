@@ -1,7 +1,6 @@
 ---
-name: verify-citations
-description: Audit citations in LaTeX files -- check all \cite keys exist in .bib and verify via literature search
-user_invocable: true
+name: "verify-citations"
+description: "Audit citations in LaTeX files -- check all \\cite keys exist in .bib and verify via literature search"
 ---
 
 # Verify Citations Skill
@@ -9,9 +8,9 @@ user_invocable: true
 Audit citations for correctness. Checks that every \cite{KEY} has a matching BibTeX entry and verifies each entry against online search.
 
 ## Examples
-- `/verify-citations` -- auto-detect the .tex and .bib files in the project
-- `/verify-citations paper/my_paper.tex` -- audit a specific file
-- `/verify-citations --key blume1983` -- verify single entry
+- "Audit citations in the main paper" -- auto-detect the `.tex` and `.bib` files
+- "Audit citations in `paper/my_paper.tex`" -- audit a specific file
+- "Verify only citation key `blume1983`" -- verify a single entry
 
 ## Workflow
 
@@ -60,5 +59,5 @@ Process citations in batches of 5 to respect rate limits.
 After delivering the audit, explicitly tell the user what to do next:
 
 1. **If any entries are MISMATCH or MISSING**: "The audit flagged <N> entries that need attention. Fix the bibliography before the next paper compile."
-2. **If the audit is clean**: "Citations check out. If the paper is near submission, run `/contribution-report` to refresh the human-vs-AI line tally before final commit."
-3. **Always remind**: "Log this audit with `/log-conversation` and any cleanup time with `/log-human-time`."
+2. **If the audit is clean**: "Citations check out. If the paper is near submission, run the `contribution-report` skill to refresh the human-vs-AI line tally before final commit."
+3. **Always remind**: "Log this audit with `log-conversation` and any cleanup time with `log-human-time`."

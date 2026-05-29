@@ -1,5 +1,5 @@
 ---
-name: log-human-time
+name: "log-human-time"
 description: "Append a single human work session to submission/human_time_log.md and update the running totals. Use after any block of direct human work on the AFA 2027 project."
 ---
 

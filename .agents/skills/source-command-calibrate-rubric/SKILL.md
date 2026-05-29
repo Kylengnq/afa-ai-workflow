@@ -1,12 +1,17 @@
 ---
-description: Build or refresh references/top_journal_calibration.json — the held-out anchor that gates "Top Generalist Candidate" labels in /brainstorm and /idea
+name: "source-command-calibrate-rubric"
+description: "Build or refresh references/top_journal_calibration.json \u2014 the held-out anchor that gates \"Top Generalist Candidate\" labels in /brainstorm and /idea"
 ---
 
-Run the `calibrate-rubric` skill.
+# source-command-calibrate-rubric
 
-Optional inputs (target journals, recency window, topic coverage):
+Use this compatibility skill when the user asks for `/calibrate-rubric`,
+`calibrate-rubric`, or a top-journal calibration refresh.
 
-$ARGUMENTS
+## Command Template
+
+Run the `calibrate-rubric` skill. Use any target journals, recency window, or
+topic coverage constraints from the user's prompt.
 
 Steps:
 1. Pull recent top-3 acceptances (last 24 months) via `top_cited_articles` and `search_papers` filtered to JF, JFE, RFS.

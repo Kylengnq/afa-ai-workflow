@@ -1,5 +1,5 @@
 ---
-name: literature-positioning-map
+name: "literature-positioning-map"
 description: "Map the closest literature and sharpen contribution claims for finance or real-estate papers. Use for related-literature sections, novelty maps, and closest-paper comparisons."
 ---
 

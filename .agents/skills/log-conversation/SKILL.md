@@ -1,5 +1,5 @@
 ---
-name: log-conversation
+name: "log-conversation"
 description: "Capture the full transcript of an AI conversation into submission/conversations/ as a timestamped Markdown file and update the conversation index. Run after every meaningful AI session for the AFA 2027 submission."
 ---
 

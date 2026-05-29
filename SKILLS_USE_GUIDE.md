@@ -43,7 +43,7 @@ The skills depend on each other. Run them in this order on day one:
 3. /brainstorm <topic>      # or /idea <specific question> if you already have one
 ```
 
-`/calibrate-rubric` is the step most people miss. Without it, `/brainstorm` and `/idea` still run, but they cap the verdict at Strong Field Go — they cannot certify an idea against the top-3 journal frontier.
+`/calibrate-rubric` is the step most people miss. Without it, `/brainstorm` and `/idea` still run, but they cap the verdict at Strong Field Candidate — they cannot certify an idea against the top-3 journal frontier.
 
 Do not run `/init-submission` for a real project before 2026-06-01. The AFA
 call requires the investigation to begin on or after that date with the initial
@@ -89,22 +89,28 @@ If your assistant supports repo-defined agents, use the paper-reader prompt:
 
 `/brainstorm` and `/idea` use terms that aren't standard finance vocabulary:
 
-- **Displacement target.** The specific paper, model claim, or empirical regularity an idea would render wrong. Ideas without a concrete target cap at Strong Field. Example: *"This would displace Krishnamurthy & Vissing-Jørgensen's (2012) claim about liquidity premia."*
+- **Displacement target.** What an idea would render wrong if it succeeds. Must be one of four concrete categories with a falsifiable counterfactual: (1) a named paper, (2) a model claim, (3) an empirical regularity, or (4) a maintained assumption / measurement convention / decision-relevant belief (this last category requires citing evidence the assumption is held and naming a specific alternative). Ideas without a concrete target cap at Strong Field Candidate.
 
 - **Calibration set.** `references/top_journal_calibration.json`, built by `/calibrate-rubric`. ~20 recent JF/JFE/RFS acceptances and ~20 stalled SSRN analogs, each tagged with question, mechanism, identification style, and displacement target. The external anchor for tier labels.
 
 - **Archetype parity.** For each top-tier candidate, the skill pulls 3 accepted and 2 stalled analogs from the calibration set. Below parity on all dimensions of all three accepted → tier downgrade. Can't differentiate from a stalled analog → tier downgrade.
 
-- **Two-editor desk-reject.** Before issuing a Top Generalist label, the skill writes desk-reject letters from two editor archetypes (empirical corporate vs. asset pricing/theory) in parallel. Both convincing → tier downgrade.
+- **Top-tier novelty audit.** Before issuing a Top Generalist Candidate, the skill fires one final fresh Corbis search scoped to the candidate's displacement target + mechanism (Phase 6.5a in `/brainstorm`, Stage 3.5a in `/idea`). A near-duplicate caps the verdict at Strong Field Candidate.
+
+- **Novelty confidence tag (rule-based).** Every verdict carries High / Medium / Low confidence, determined by paper_set coverage, calibration mechanism match, and number of targeted searches that ran. **Low confidence automatically caps the verdict at Strong Field Candidate.** This is not LLM self-assessment — the thresholds are explicit in the skill files.
+
+- **Two-editor desk-reject.** Before issuing a Top Generalist Candidate, the skill writes desk-reject letters from two editor archetypes (empirical corporate vs. asset pricing/theory) in parallel. Both convincing → tier downgrade.
 
 - **Lens-source discipline.** Ideas come from 11 generative lenses. ≥2 of the top 3 must come from Lens 1 (practitioner gap), Lens 3 (first principles), or Lens 4 (unification). Lens 10 (new data × old question) is hard-capped at Strong Field.
 
-- **Hierarchical gates.** Tier labels are determined by gates passed, not by a smoothed total score. Importance ≥ 4 → Contribution ≥ 4 → Bridge ≥ 4 → displacement named → archetype parity → desk-reject survival. Failing any caps the verdict.
+- **Hierarchical gates.** Tier labels are determined by gates passed, not by a smoothed total score. Importance ≥ 4 → Contribution ≥ 4 → Bridge ≥ 4 → displacement named → archetype parity → fresh-search novelty audit → desk-reject survival → confidence ≥ Medium. Failing any caps the verdict.
 
-- **Three tiers.**
-  - *Top Generalist Go* — JF/JFE/RFS plausible. All gates cleared.
-  - *Strong Field Go* — solid paper, one or more gates failed.
+- **Three tiers.** The labels use *Candidate*, not *Go* — a screening pass, not a publishability prediction.
+  - *Top Generalist Candidate* — has the structure of an idea that recent JF/JFE/RFS papers cleared. All gates cleared, confidence ≥ Medium.
+  - *Strong Field Candidate* — solid idea, one or more gates failed, or Low confidence.
   - *Workshop* — feasible but narrow scope, falls below Strong Field gates.
+
+- **Idea lineage.** Every `/idea` run writes a dated directory at `ideas/<date>_<slug>/` containing `idea_card.md`, `gate_scores.json`, and `desk_rejects.md`. This accumulates an audit trail over time — which gates kill projects, which lenses produce winners, how ideas evolved through re-screening.
 
 ## Notes
 

@@ -4,9 +4,8 @@ This repository is set up as a working template for the **AFA 2027 Annual Meetin
 Special Session on Papers Written with Generative AI Workflows**. The call
 requires authors to submit, alongside the paper, full text of every AI
 conversation, a time log of human activity, a contribution report, and
-documentation of the workflow and model configuration. This file (the Codex
-counterpart to `CLAUDE.md`) tells you how to keep that documentation in good
-shape as the project runs.
+documentation of the workflow and model configuration. This file is the Codex
+project guide for keeping those artifacts in good shape as the project runs.
 
 ## AFA Submission Mode
 
@@ -28,13 +27,13 @@ shape as the project runs.
 - Organizers state they will not use non-public submission and review
   information for their own research.
 
-**What this repo expects of the assistant:**
+**What this repo expects of Codex:**
 
 1. Every meaningful AI conversation in this repo must be captured in
-   `submission/conversations/` as a verbatim transcript (`log-conversation`
-   skill).
+   `submission/conversations/` as a verbatim transcript. Use the
+   `log-conversation` skill for manual or backfilled transcript capture.
 2. Every block of direct human work must be logged in
-   `submission/human_time_log.md` (`log-human-time`).
+   `submission/human_time_log.md` with the `log-human-time` skill.
 3. The initial prompt, model configuration, and data access plan live in
    `submission/initial_prompt.md`, `submission/model_config.md`, and
    `submission/data_access.md`. Use `init-submission` on day one.
@@ -42,23 +41,48 @@ shape as the project runs.
    `submission/call_requirements.md`.
 5. Before submission, run `contribution-report` to regenerate the
    human-vs-AI line tally.
-6. The LaTeX template (`latex_template/academic_paper_template.tex`)
-   includes Appendix A-D placeholders that mirror these artifacts.
+6. The LaTeX template (`latex_template/academic_paper_template.tex`) includes
+   Appendix A-D placeholders that mirror these artifacts.
 
-## Automatic logging via hooks
+If the user asks for work that has not been logged, surface it and use the
+logging skills before moving on when appropriate.
 
-Three Claude Code hooks at `.claude/hooks/` automate routine logging:
-`session-start.py`, `log-turn.py` (renders the transcript to
-`submission/conversations/` after every turn), and `session-end.py` (appends
-to `submission/human_time_log.md`). Hooks skip if today is before 2026-06-01,
-if `.no-afa-logging` exists, or if `submission/initial_prompt.md` is still the
-unedited template. See `submission/HOOKS.md`.
+## Codex Surfaces
 
-Codex does not run these hooks; for Codex sessions use `log-conversation`
-manually. When working in Claude Code with hooks active, do not re-log the
-current session via `log-conversation` — it would duplicate the file.
+Codex-facing assets live alongside the Claude Code sources:
 
-## Skill routing
+- Project instructions: `AGENTS.md`
+- Project config and MCP: `.codex/config.toml`
+- Codex lifecycle hooks: `.codex/hooks.json` and `.codex/hooks/`
+- Custom agents: `.codex/agents/`
+- Codex skills and command-compatibility wrappers: `.agents/skills/`
+- Local plugin marketplace: `.agents/plugins/marketplace.json`
+- Codex plugin manifest: `.codex-plugin/plugin.json`
+
+Do not edit `.claude/` or `.mcp.json` while optimizing Codex behavior unless the
+user explicitly asks to change Claude Code source configuration.
+
+## Automatic Logging
+
+Claude Code hooks remain under `.claude/hooks/` and are documented in
+`submission/HOOKS.md`. Codex has its own project hooks under `.codex/`:
+
+- `SessionStart` writes a session sentinel after 2026-06-01 once the submission
+  package has been initialized.
+- `Stop` re-renders the Codex transcript to `submission/conversations/` when a
+  transcript path is available.
+- `PostToolUse` compiles edited LaTeX documents after `apply_patch`/edit events
+  when the touched file contains `\documentclass`.
+
+Codex hooks skip before 2026-06-01, when `.no-afa-logging` exists, or when
+`submission/initial_prompt.md` is still the unedited template. Codex does not
+have a true `SessionEnd` hook, so direct human work still needs the
+`log-human-time` skill. If an expected transcript is not written, backfill with
+`log-conversation`.
+
+Project hooks must be reviewed and trusted through Codex before they run.
+
+## Skill Routing
 
 Before responding to any research-related prompt, check whether a skill applies.
 
@@ -76,47 +100,58 @@ Before responding to any research-related prompt, check whether a skill applies.
 | Verify citations in a .bib file | `verify-citations` |
 | Visualize literature trends, gaps, methods | `literature-landscape` |
 
-**First-time setup ordering:** `init-submission` → `calibrate-rubric` → `research-idea-generator` or `finance-idea-screening`. The calibration set at `references/top_journal_calibration.json` is required for the idea skills to issue "Top Generalist Go" verdicts; without it they cap at Strong Field Go.
+First-time setup ordering: `init-submission` -> `calibrate-rubric` ->
+`research-idea-generator` or `finance-idea-screening`. The calibration set at
+`references/top_journal_calibration.json` is required for the idea skills to
+issue "Top Generalist Candidate" verdicts; without it they cap at Strong Field Candidate.
 
-## Corbis tool usage
+## Corbis Tool Usage
 
 **Always search before asserting.** Do not guess about novelty, literature, or
 data availability when you can check.
 
-Available tools:
-- `search_papers`, `get_paper_details`, `get_paper_details_batch`, `top_cited_articles` — literature search
-- `export_citations`, `format_citation` — citation management
-- `search_datasets` — data discovery (for idea screening)
-- `fred_search`, `fred_series_batch` — macro data context
-- `get_market_data`, `compare_markets`, `search_markets`, `get_market_trends` — CRE market intelligence
+Available Corbis MCP tools:
+
+- `search_papers`, `get_paper_details`, `get_paper_details_batch`,
+  `top_cited_articles`: literature search
+- `export_citations`, `format_citation`: citation management
+- `search_datasets`: data discovery for idea screening
+- `fred_search`, `fred_series_batch`: macro data context
+- `get_market_data`, `compare_markets`, `search_markets`, `get_market_trends`:
+  CRE market intelligence
 
 Key principles:
-- Use `search_papers` before claiming any idea is novel
-- Use `compact: true` on `search_papers` when you only need titles and metadata (saves ~80% payload)
-- Use `sortBy: "citedByCount"` to find the most influential papers on a topic
-- Use `get_paper_details_batch` (up to 25 IDs) instead of repeated `get_paper_details` calls
-- Use `top_cited_articles` with the `query` parameter to find highly cited papers on a specific topic within journals
-- Use `export_citations` (format: `bibtex`) to generate bibliography entries
 
-See `CORBIS_MCP_TOOL_REFERENCE.md` for full tool documentation.
-See `CORBIS_MCP_GUIDE.md` for MCP server architecture and authentication.
-See `CORBIS_MCP_CODEX_GUIDE.md` for Codex setup.
-See `CORBIS_MCP_CLAUDE_CODE_GUIDE.md` for Claude Code setup.
+- Use `search_papers` before claiming any idea is new.
+- Use `compact: true` on `search_papers` when you only need titles and metadata.
+- Use `sortBy: "citedByCount"` to find the most influential papers on a topic.
+- Use `get_paper_details_batch` (up to 25 IDs) instead of repeated
+  `get_paper_details` calls.
+- Use `top_cited_articles` with the `query` parameter to find highly cited
+  papers on a specific topic within journals.
+- Use `export_citations` with `format: "bibtex"` to generate bibliography
+  entries.
 
-## Writing quality
+See `CORBIS_MCP_TOOL_REFERENCE.md` for tool documentation,
+`CORBIS_MCP_GUIDE.md` for MCP architecture and authentication, and
+`CORBIS_MCP_CODEX_GUIDE.md` for Codex setup.
+
+## Writing Quality
 
 When producing literature reviews or research prose:
-- Read `references/writing-norms.md` and `references/banned-words.md`
-- Synthesize by theme, do not enumerate paper by paper
-- No filler intensifiers ("crucially," "importantly," "interestingly")
-- No em dashes. Use commas, parentheses, colons, or separate sentences
-- No promotional language ("novel," "groundbreaking")
-- Cite to support claims, not to name-drop
 
-## Project structure
+- Read `references/writing-norms.md` and `references/banned-words.md`.
+- Synthesize by theme, do not enumerate paper by paper.
+- No filler intensifiers such as "crucially," "importantly," or
+  "interestingly".
+- No em dashes. Use commas, parentheses, colons, or separate sentences.
+- No promotional language such as "novel" or "groundbreaking".
+- Cite to support claims, not to name-drop.
 
-```
-submission/      AFA 2027 submission package (initial prompt, conversations, human time log, contribution report)
+## Project Structure
+
+```text
+submission/      AFA 2027 submission package
 notes/           Lab notebook, reading lists, idea menus
 output/          Literature reviews, positioning memos, idea cards, paper_set.json
 paper/           LaTeX manuscript (copy latex_template/ to start)
@@ -124,10 +159,9 @@ latex_template/  Article template with AFA appendix sections A-D
 references/      Writing norms, citation formatting
 ```
 
-## Shared data files
+## Shared Data Files
 
-Skills produce composable outputs that later skills can reuse. This avoids
-redundant searches.
+Skills produce composable outputs that later skills can reuse.
 
 ### `output/paper_set.json`
 
@@ -136,6 +170,7 @@ here. Every skill that needs papers reads this first before running new
 searches.
 
 Format: JSON array of paper objects:
+
 ```json
 [
   {
@@ -155,38 +190,40 @@ Format: JSON array of paper objects:
 ```
 
 Rules:
-- If `output/paper_set.json` exists when a skill starts, read it and merge new results (deduplicate by `id`). Do not overwrite.
-- The `fullText` field is included when available from `get_paper_details`. Use it for deeper analysis when present.
-- The `source_queries` field tracks which search queries surfaced this paper.
-- The `tier` field is assigned after collection using relative tiering.
+
+- If `output/paper_set.json` exists when a skill starts, read it and merge new
+  results. Deduplicate by `id`; do not overwrite.
+- Include `fullText` when available from `get_paper_details`.
+- Track which search queries surfaced a paper in `source_queries`.
+- Assign `tier` after collection using relative tiering.
 
 ### `output/search_log.md`
 
 Search transparency log. Every skill appends its searches here.
 
-### Relative citation tiering
+### Relative Citation Tiering
 
-Top 10% by `citedByCount` are **Foundational** (named, discussed). Next 30% are
-**Established** (synthesized). Bottom 60% are **Emerging** (grouped). A paper
-appearing in 3+ search queries is promoted one tier.
+Top 10% by `citedByCount` are **Foundational** and discussed individually. Next
+30% are **Established** and synthesized. Bottom 60% are **Emerging** and grouped.
+A paper appearing in 3+ search queries is promoted one tier.
 
-## Lab notebook
+## Lab Notebook
 
 Every skill that produces a deliverable appends a dated entry to
 `notes/lab_notebook.md`. If the file does not exist, create it with a header:
 `# Lab Notebook`.
 
-## Paper-reader agent
+## Paper-Reader Agent
 
-The paper-reader agent (`.claude/agents/paper-reader.md`) can read and summarize
-academic PDFs. After a literature search identifies the top 3-5 most central
-papers, recommend that the user run the paper-reader on those papers for
-deeper understanding before writing synthesis claims.
+The Codex custom agent `paper-reader` lives at `.codex/agents/paper-reader.toml`.
+Use it when the user wants to read, understand, or summarize academic PDFs.
+After a literature search identifies the top 3-5 most central papers, recommend
+running `paper-reader` on those papers before writing synthesis claims.
 
 ## Defaults
 
-- **Output format**: Save literature reviews and memos to `output/` as
-  Markdown. Save BibTeX to `.bib` files. Write LaTeX directly into `.tex`
-  files.
-- **Citations**: Use `\citet{}` and `\citep{}` (natbib). Bibliography style:
-  `plainnat`.
+- Save literature reviews and memos to `output/` as Markdown.
+- Save BibTeX to `.bib` files.
+- Write LaTeX directly into `.tex` files.
+- Use `\citet{}` and `\citep{}` with natbib.
+- Bibliography style: `plainnat`.

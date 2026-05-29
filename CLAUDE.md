@@ -80,7 +80,7 @@ Before responding to any research-related prompt, check whether a skill applies.
 | Verify citations in a .bib file | `verify-citations` |
 | Visualize literature trends, gaps, methods | `literature-landscape` |
 
-**First-time setup ordering:** `/init-submission` → `/calibrate-rubric` → `/brainstorm` or `/idea`. The calibration set at `references/top_journal_calibration.json` is required for the idea skills to issue "Top Generalist Go" verdicts; without it they cap at Strong Field Go.
+**First-time setup ordering:** `/init-submission` → `/calibrate-rubric` → `/brainstorm` or `/idea`. The calibration set at `references/top_journal_calibration.json` is required for the idea skills to issue "Top Generalist Candidate" verdicts; without it they cap at Strong Field Candidate.
 
 ## Corbis tool usage
 

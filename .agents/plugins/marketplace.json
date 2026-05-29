@@ -8,7 +8,7 @@
       "name": "afa-ai-workflow-template",
       "source": {
         "source": "local",
-        "path": "./plugins/afa-ai-workflow-template"
+        "path": "./"
       },
       "policy": {
         "installation": "AVAILABLE",

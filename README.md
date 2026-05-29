@@ -67,7 +67,7 @@ runs on.
 |---|---|
 | `submission/` | The AFA submission package — call requirements, initial prompt, model config, data access, workflow narrative, conversations/, human time log, contribution report |
 | AFA skills (`/init-submission`, `/log-conversation`, `/log-human-time`, `/contribution-report`) | Maintain the submission package as the project runs |
-| Calibration skill (`/calibrate-rubric`) | Build the held-out top-3 journal anchor that gates "Top Generalist Go" labels in idea screening |
+| Calibration skill (`/calibrate-rubric`) | Build the held-out top-3 journal anchor that gates "Top Generalist Candidate" labels in idea screening |
 | Research skills (`/lit-review`, `/lit-search`, `/brainstorm`, `/idea`, `/verify-citations`, `/lit-landscape`) | Do the actual research; the call permits and expects AI-driven research |
 | Corbis MCP | Literature search across 400,000+ papers, plus FRED, market data, and dataset discovery |
 | `latex_template/` | A clean article template with four AFA-specific appendix sections (workflow, initial prompt, contributions, conversation index) |
@@ -150,7 +150,7 @@ in this order on or after 2026-06-01:
 /idea <best candidate>  # screens the chosen idea end-to-end and returns Go / Revise / Kill
 ```
 
-`/calibrate-rubric` is the step most people miss. Without it, `/brainstorm` and `/idea` cap their verdict at "Strong Field Go" — they still run, but they can't certify an idea against the top-3 journal frontier. It takes ~5-10 minutes and only needs to run once every ~6 months.
+`/calibrate-rubric` is the step most people miss. Without it, `/brainstorm` and `/idea` cap their verdict at "Strong Field Candidate" — they still run, but they can't certify an idea against the top-3 journal frontier. It takes ~5-10 minutes and only needs to run once every ~6 months.
 
 ### 5. Keep the documentation current as you work
 
@@ -178,7 +178,7 @@ in this order on or after 2026-06-01:
 
 | Workflow | What it does |
 |---|---|
-| `/calibrate-rubric` | Build (or refresh) `references/top_journal_calibration.json` — the held-out anchor of ~20 recent JF/JFE/RFS acceptances and ~20 stalled analogs that gates "Top Generalist Go" labels in `/brainstorm` and `/idea`. Run once every ~6 months. |
+| `/calibrate-rubric` | Build (or refresh) `references/top_journal_calibration.json` — the held-out anchor of ~20 recent JF/JFE/RFS acceptances and ~20 stalled analogs that gates "Top Generalist Candidate" labels in `/brainstorm` and `/idea`. Run once every ~6 months. |
 
 ### Research skills
 
@@ -198,12 +198,18 @@ agents.
 
 `/brainstorm` and `/idea` use a few terms that aren't standard finance vocabulary. Quick definitions:
 
-- **Displacement target.** The specific paper, model claim, or empirical regularity an idea would render wrong if it's right. Ideas without a concrete displacement target are capped at Strong Field — they may be good projects but they aren't top-3 ambitious. Example: *"This would displace Krishnamurthy & Vissing-Jørgensen's (2012) claim that liquidity premia are driven only by collateral demand."*
-- **Calibration set.** The held-out reference file at `references/top_journal_calibration.json`, built by `/calibrate-rubric`. Contains ~20 recent JF/JFE/RFS acceptances and ~20 stalled SSRN analogs with their question, mechanism, identification style, and displacement target. Acts as the external anchor for tier labels.
-- **Archetype parity.** For each top-tier candidate, the skill picks 3 accepted and 2 stalled analogs from the calibration set sharing the candidate's mechanism. If the candidate is below parity on breadth/cleanness/surprise against all three accepted analogs, it gets downgraded. If it can't differentiate itself from at least one stalled analog, also downgraded.
-- **Two-editor desk-reject.** Before issuing a Top Generalist label, the skill simulates desk-reject letters from two editor archetypes (empirical corporate vs. asset pricing/theory). Both convincing → tier downgrade.
-- **Lens-source discipline.** Ideas come from one of 11 generative lenses. The skill enforces that ≥2 of the top 3 ranked ideas come from Lens 1 (practitioner gap), Lens 3 (first principles), or Lens 4 (unification). Lens 10 (new data × old question) is hard-capped at Strong Field — historically most "new data" papers don't reach top-3.
-- **Three tiers.** *Top Generalist Go* (JF/JFE/RFS plausible — all gates cleared), *Strong Field Go* (solid paper at a strong field journal — one or more gates failed), *Workshop* (feasible but narrow scope).
+- **Displacement target.** What an idea would render wrong if it succeeds. Must be one of four concrete categories with a falsifiable counterfactual: (1) a named paper (author, year), (2) a model claim, (3) an empirical regularity, or (4) a maintained assumption / measurement convention / decision-relevant belief (this last category requires citing evidence the assumption is held and naming a specific alternative — vague "challenges conventional wisdom" claims do not qualify). Ideas without a concrete target are capped at Strong Field Candidate.
+- **Calibration set.** The held-out reference file at `references/top_journal_calibration.json`, built by `/calibrate-rubric`. Contains ~20 recent JF/JFE/RFS acceptances and ~20 stalled SSRN analogs, each tagged with question, mechanism, identification style, and displacement target. The external anchor for tier labels.
+- **Archetype parity.** For each top-tier candidate, the skill picks 3 accepted and 2 stalled analogs from the calibration set sharing the candidate's mechanism. Below parity on all dimensions of all three accepted → tier downgrade. Can't differentiate from a stalled analog → tier downgrade.
+- **Top-tier novelty audit.** Before issuing a Top Generalist Candidate, the skill fires one final fresh Corbis search scoped to the candidate's displacement target plus mechanism. A near-duplicate caps the verdict at Strong Field Candidate. Cheap belt-and-suspenders check that closes the paper_set blind-spot risk for the highest-stakes label.
+- **Novelty confidence tag (rule-based).** Every verdict carries High / Medium / Low confidence, determined by paper_set coverage, calibration mechanism match, and number of targeted searches that ran. **Low confidence automatically caps the verdict at Strong Field Candidate.** Not LLM self-assessment — thresholds are explicit.
+- **Two-editor desk-reject.** Before issuing a Top Generalist Candidate, the skill simulates desk-reject letters from two editor archetypes (empirical corporate vs. asset pricing/theory) in parallel. Both convincing → tier downgrade.
+- **Lens-source discipline.** Ideas come from 11 generative lenses. ≥2 of the top 3 must come from Lens 1 (practitioner gap), Lens 3 (first principles), or Lens 4 (unification). Lens 10 (new data × old question) is hard-capped at Strong Field — historically most "new data" papers don't reach top-3.
+- **Three tiers.** The labels use *Candidate*, not *Go* — a screening pass, not a publishability prediction.
+  - *Top Generalist Candidate* — has the structure of an idea that recent JF/JFE/RFS papers cleared. All gates cleared, confidence ≥ Medium.
+  - *Strong Field Candidate* — solid idea, one or more gates failed, or Low confidence.
+  - *Workshop* — feasible but narrow scope.
+- **Idea lineage.** Every `/idea` run writes a dated directory at `ideas/<date>_<slug>/` containing `idea_card.md`, `gate_scores.json`, and `desk_rejects.md`. Builds an audit trail over time — which gates kill projects, which lenses produce winners, how ideas evolved.
 
 ### How the research skills connect
 
@@ -250,12 +256,15 @@ submission/                  AFA submission package
   contribution_report.md       Human vs AI line tally
 .claude-plugin/              Claude Code plugin manifest
 .codex-plugin/               Codex plugin manifest
+.codex/                      Codex config, hooks, MCP config, and custom agents
 .claude/skills/              Workflow definitions (Claude Code)
 .claude/commands/            Slash-command wrappers
 .claude/agents/              Paper-reader subagent prompt
 .agents/skills/              Workflow definitions (Codex and other MCP agents)
+.agents/plugins/             Local Codex plugin marketplace
 notes/lab_notebook.md        Project log
 output/                      Reviews, memos, figures, paper_set.json
+ideas/                       Per-idea lineage from /idea (idea_card.md, gate_scores.json, desk_rejects.md)
 paper/                       LaTeX manuscript (copy from latex_template/)
 latex_template/              Article template with AFA appendix sections
 references/                  Writing norms, citation formatting
@@ -278,6 +287,15 @@ references/                  Writing norms, citation formatting
 Installs the eleven skills, eleven slash commands, paper-reader subagent, and Corbis
 MCP server in one step. A parallel Codex manifest is at
 `.codex-plugin/plugin.json`. Set `CORBIS_MCP_API_KEY` before use.
+
+## Use with Codex
+
+Codex reads this repo through `AGENTS.md`, `.codex/config.toml`,
+`.codex/hooks.json`, `.codex/agents/`, and `.agents/skills/`. The local Codex
+plugin marketplace at `.agents/plugins/marketplace.json` points to the repo root,
+so the root `.codex-plugin/plugin.json` is the single source for plugin
+metadata. Set `CORBIS_MCP_API_KEY` before starting Codex to enable the Corbis MCP
+server.
 
 ## Documentation
 

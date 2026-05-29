@@ -1,5 +1,5 @@
 ---
-name: literature-review
+name: "literature-review"
 description: "Write a comprehensive, structured literature review on a topic. Searches the literature via Corbis, organizes into thematic strands, writes synthesized prose (not paper-by-paper enumeration), and outputs as Markdown, LaTeX section, or standalone LaTeX document with proper BibTeX citations."
 ---
 

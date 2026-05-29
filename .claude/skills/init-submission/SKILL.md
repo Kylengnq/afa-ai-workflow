@@ -87,7 +87,7 @@ this once, on the day the project starts.
 
 After completing this skill, explicitly tell the user what to do next:
 
-1. **If `references/top_journal_calibration.json` does not exist**: "Next, run `/calibrate-rubric` to build the top-3 journal anchor. Without it, idea screening will cap at Strong Field Go. Takes ~5-10 minutes and only needs to run once every ~6 months."
+1. **If `references/top_journal_calibration.json` does not exist**: "Next, run `/calibrate-rubric` to build the top-3 journal anchor. Without it, idea screening will cap at Strong Field Candidate. Takes ~5-10 minutes and only needs to run once every ~6 months."
 2. **If the calibration set exists and the user has a vague topic**: "Next, run `/brainstorm <your topic>` to generate ten ranked ideas with gate verdicts."
 3. **If the calibration set exists and the user has a specific question**: "Next, run `/idea <your question>` to screen it end-to-end."
 4. **If a first AI response is available but unlogged**: "I haven't yet captured the opening AI exchange. Run `/log-conversation` and paste the transcript so the submission's `conversations/` directory has its first entry."

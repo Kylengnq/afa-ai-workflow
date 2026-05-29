@@ -1,5 +1,5 @@
 ---
-name: contribution-report
+name: "contribution-report"
 description: "Regenerate submission/contribution_report.md with current line-count tallies for code, writing, and documentation, split by human and AI authorship. Run before AFA 2027 submission."
 ---
 

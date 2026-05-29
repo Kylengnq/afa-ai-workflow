@@ -23,7 +23,7 @@ Three idea-source strategies, ranked by effectiveness:
 
 Before scoring any candidate, read `references/top_journal_calibration.json` if it exists. This file is built by the `calibrate-rubric` skill and contains ~20 recent JF/JFE/RFS acceptances and ~20 stalled working-paper analogs, with each anchored by its question, mechanism, identification style, generating lens, and displacement target.
 
-The calibration set is the external anchor for the "Top Generalist Go" label. Without it, the skill falls back to internal scoring only and cannot issue Top Generalist labels — it caps at Strong Field Go and warns the user.
+The calibration set is the external anchor for the "Top Generalist Candidate" label. Without it, the skill falls back to internal scoring only and cannot issue Top Generalist labels — it caps at Strong Field Candidate and warns the user.
 
 If the file is missing, before continuing, suggest running `/calibrate-rubric` to build it. If the user declines, proceed under the cap.
 
@@ -195,13 +195,23 @@ For each surviving candidate (~10-15), do three things in order: name the displa
 
 ### Step 5a — Displacement target (hard gate)
 
-For each candidate, name in one sentence the specific paper, model, textbook claim, or empirical regularity this idea would displace if it is right. Use the prompt template:
+For each candidate, name in one sentence the specific thing this idea would displace if it is right. Use the prompt template:
 
 > "If this paper is accepted, what gets struck out of next year's PhD finance reading list, or which claim in a canonical model becomes wrong?"
 
-The answer must name something concrete: a paper (with author, year), a model (e.g., "the Diamond-Dybvig assumption that all withdrawals are equally informative"), or an empirical regularity (e.g., "the documented Monday effect in stock returns").
+A displacement target must fall into one of four concrete categories, and each must include a **falsifiable counterfactual** — what would change about the literature if the paper succeeded:
 
-**Hard gate:** If the model cannot name a concrete displacement target, **Importance is capped at 3** for this candidate. The candidate cannot rank above Strong Field tier regardless of the other scores. Vague displacement claims ("it would change how we think about X") do not count and trigger the cap.
+1. **A named paper** (author, year): e.g., "Stambaugh & Yuan (2017) factor framework — specifically the claim that mispricing is captured by sentiment-orthogonal characteristics."
+2. **A model claim**: e.g., "the Diamond-Dybvig assumption that all withdrawals are equally informative."
+3. **An empirical regularity**: e.g., "the documented Monday effect in stock returns."
+4. **A maintained assumption, measurement convention, or decision-relevant belief.** This category is admissible only with the following structure:
+   - For a **maintained assumption**: cite at least one published paper that explicitly maintains it (so the assumption is demonstrably held by the literature, not invented to be displaced).
+   - For a **measurement convention**: name the canonical measure (e.g., "tangible-book leverage as the standard financial-constraint proxy"), the proposed alternative, and the expected direction of the bias.
+   - For a **decision-relevant belief**: name the audience that holds it (regulator, manager class, investor type), and cite evidence the belief is actually held (a survey, a Fed report, an industry practice, a policy document).
+
+This fourth category exists because real top-3 papers regularly displace maintained assumptions (e.g., Mian & Sufi's household-debt measurement), measurement conventions (e.g., Koijen & Yogo's demand system), or institutional beliefs (e.g., much of climate finance) without naming a single prior paper to displace.
+
+**Hard gate:** If the model cannot name a concrete displacement target that fits one of the four categories *and* states a falsifiable counterfactual, **Importance is capped at 3** for this candidate. The candidate cannot rank above Strong Field tier regardless of the other scores. Vague displacement claims ("it would change how we think about X") do not count and trigger the cap. Category 4 claims without citation evidence or a named alternative also do not count.
 
 ### Step 5b — Score on three dimensions
 
@@ -238,7 +248,7 @@ For each stalled analog, write one sentence on the candidate's differentiation:
 
 **Hard gate:** If the candidate is below parity on *all* three accepted analogs on *all* three of breadth/cleanness/surprise, **Importance is re-scored down by 1** (minimum 2). If the candidate fails to differentiate from at least one stalled analog, **the candidate is downgraded one tier** in Phase 7.
 
-If `references/top_journal_calibration.json` is missing, skip this step but cap the verdict at Strong Field Go in Phase 7 and emit a warning.
+If `references/top_journal_calibration.json` is missing, skip this step but cap the verdict at Strong Field Candidate in Phase 7 and emit a warning.
 
 Select the top 10 by post-gate composite for the Idea Menu.
 
@@ -280,6 +290,32 @@ Same format. One paragraph, or "advances" with a sentence.
 
 Save the letters to `output/desk_reject_letters.md` for every candidate that was simulated (not just survivors).
 
+## Phase 6.5: Top-tier novelty audit and confidence tag
+
+Two final checks before tier assignment, applied only to candidates that survived Phase 5 with composite ≥ 12, a named displacement target, and archetype parity.
+
+### Step 6.5a — Scoped fresh search
+
+Even with paper-set-first triage in Phase 3, the initial `output/paper_set.json` can have blind spots. For the highest-stakes verdict the cost of one extra Corbis call is trivial compared to the cost of a false Top Generalist label.
+
+For each candidate that could plausibly receive Top Generalist Candidate status, fire one final `search_papers` call scoped to the **displacement target plus the mechanism**, not generic topic terms. `matchCount: 8`, `compact: true`. If the candidate is one of several survivors, batch these calls in a single message as parallel tool uses.
+
+Read the top 3 results. If any one of them looks like a near-duplicate of the candidate's question + mechanism + identification combination, the candidate cannot receive Top Generalist Candidate — cap at Strong Field Candidate and surface the near-duplicate paper to the user.
+
+This is a single belt-and-suspenders check, not a re-screen. Tangentially related work does not block the verdict.
+
+### Step 6.5b — Novelty confidence tag
+
+For every candidate that reaches this phase, attach a confidence tag to the final novelty claim. Confidence is determined by rule, not LLM self-assessment:
+
+| Tag | Required conditions (all three) |
+|---|---|
+| **High** | Calibration set has ≥ 1 mechanism-matched anchor; paper_set has ≥ 20 papers in the candidate's area; ≥ 2 targeted Corbis searches ran (Phase 3 + Phase 6.5a) and surfaced fewer than 5 close hits combined |
+| **Medium** | Any one of the High conditions fails |
+| **Low** | Paper_set has < 10 papers in the area, OR no targeted Phase 3 search ran for this candidate, OR Phase 6.5a was skipped |
+
+**Hard gate:** **Low confidence automatically caps the verdict at Strong Field Candidate.** This prevents confidently top-tier verdicts resting on thin search evidence. Surface the confidence tag and the reason on the Idea Card and in the verdict block.
+
 ## Phase 7: Assign tier with hierarchical gates and lens-source discipline
 
 For each surviving candidate, apply gates in order. Failing any gate caps the tier.
@@ -320,9 +356,11 @@ If the top 3 violate this rule (e.g., all three are Lens 6 literature-gap ideas)
 
 | Tier | Description | Gates required |
 |---|---|---|
-| **Top Generalist** | Broad mechanism, general implications, strong identification, displaces a concrete target | All gates 1-5 cleared; not Lens 10 |
-| **Strong Field** | Clean question within an active literature, solid design | At least Importance ≥ 3, Contribution ≥ 3, Bridge ≥ 3 |
+| **Top Generalist Candidate** | Broad mechanism, general implications, strong identification, displaces a concrete target | All gates 1-5 cleared; not Lens 10; novelty confidence ≥ Medium |
+| **Strong Field Candidate** | Clean question within an active literature, solid design | At least Importance ≥ 3, Contribution ≥ 3, Bridge ≥ 3 |
 | **Workshop** | Feasible and interesting but narrower scope | Falls below Strong Field gates |
+
+**On the "Candidate" label:** The tier names use *Candidate*, not *Go*. The verdict is a screening pass — the idea has cleared the structural tests that top-3 papers usually clear — not a publishability prediction. The candidate still requires human taste, real data inspection, and execution. No rubric can certify JF/JFE/RFS-worthiness; the calibration set only documents what the recent frontier looks like.
 
 Be honest. Most ideas are Strong Field tier. Labeling everything as top-generalist is the failure mode this skill exists to prevent.
 
@@ -334,11 +372,12 @@ Present all 10 ideas with:
 - Rank
 - One-sentence question (question-first, never "Using X data...")
 - Lens that generated it
-- **Displacement target** (one sentence)
+- **Displacement target** (one sentence, plus the target category: paper / model / regularity / assumption-or-convention-or-belief)
 - Closest paper (from novelty test)
 - **Accepted archetypes** (3 papers from calibration set, with parity verdict)
 - **Stalled analogs** (2 papers, with differentiation claim)
 - Novelty / Importance / Executability scores
+- **Novelty confidence** (High / Medium / Low, with one-line reason)
 - **Desk-reject summary** (Editor A and B verdicts, one line each)
 - **Gates cleared** (checklist)
 - Contribution tier
@@ -382,7 +421,7 @@ For the three highest-ranked ideas, provide an Idea Sketch with:
 
 At the end of the run, explicitly tell the user what to do next. Pick the most relevant recommendations based on the menu produced:
 
-1. **If the top candidate is a Top Generalist Go**: "Next, run `/idea <top candidate>` to screen it end-to-end. The menu is encouraging but `/idea` will stress-test the specific idea against the calibration anchors and produce a full Idea Card."
+1. **If the top candidate is a Top Generalist Candidate**: "Next, run `/idea <top candidate>` to screen it end-to-end. The menu is encouraging but `/idea` will stress-test the specific idea against the calibration anchors and produce a full Idea Card."
 2. **If the top 3 are all Strong Field or below**: "The topic produced no Top Generalist candidates. Either (a) the question is undersized for top-3 ambition — consider narrowing to a sharper friction or mechanism, or (b) the calibration set is missing close anchors — re-check the topic-area coverage. Run `/calibrate-rubric` if you suspect the latter."
 3. **If two or more top candidates would benefit from deeper positioning**: "Run `/lit-search <candidate>` to deepen the related-literature mapping before screening."
 4. **If the field structure feels unclear**: "Run `/lit-landscape <topic>` to visualize the trend, gap, and method structure."
@@ -425,7 +464,9 @@ Append a dated entry to `notes/lab_notebook.md`: topic, number of candidates gen
 
 These are hard bans. Ideas that violate these rules are discarded regardless of their score.
 
-- **No displacement target, no top tier.** Ideas without a named, concrete displacement target are capped at Strong Field. This is the single hardest gate.
+- **No displacement target, no top tier.** Ideas without a named, concrete displacement target (in one of the four allowed categories with a falsifiable counterfactual) are capped at Strong Field. This is the single hardest gate.
+- **Low novelty confidence, no top tier.** The High/Medium/Low confidence tag is rule-based, not LLM-determined. Low caps at Strong Field Candidate.
+- **Near-duplicate surfaced by Phase 6.5a, no top tier.** If the final scoped search surfaces a paper that matches the candidate's question + mechanism + identification, cap at Strong Field Candidate.
 - **Ban "X but in country Y"** unless the new setting generates a genuinely different economic prediction.
 - **Ban context-only contributions** where the only novelty is applying a known result to a new industry, time period, or population without new economics.
 - **Ban ideas whose identifying variation is more memorable than the question.** If the shock is cleverer than what it identifies, the idea is backwards.
