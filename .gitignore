@@ -50,3 +50,9 @@ credentials*
 
 # Keep .gitkeep files
 !.gitkeep
+
+# AFA session sentinels (per-session, transient state from hooks)
+submission/.session-*.start
+
+# AFA logging opt-out switch
+.no-afa-logging

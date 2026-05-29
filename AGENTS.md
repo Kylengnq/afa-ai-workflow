@@ -45,6 +45,19 @@ shape as the project runs.
 6. The LaTeX template (`latex_template/academic_paper_template.tex`)
    includes Appendix A-D placeholders that mirror these artifacts.
 
+## Automatic logging via hooks
+
+Three Claude Code hooks at `.claude/hooks/` automate routine logging:
+`session-start.py`, `log-turn.py` (renders the transcript to
+`submission/conversations/` after every turn), and `session-end.py` (appends
+to `submission/human_time_log.md`). Hooks skip if today is before 2026-06-01,
+if `.no-afa-logging` exists, or if `submission/initial_prompt.md` is still the
+unedited template. See `submission/HOOKS.md`.
+
+Codex does not run these hooks; for Codex sessions use `log-conversation`
+manually. When working in Claude Code with hooks active, do not re-log the
+current session via `log-conversation` — it would duplicate the file.
+
 ## Skill routing
 
 Before responding to any research-related prompt, check whether a skill applies.

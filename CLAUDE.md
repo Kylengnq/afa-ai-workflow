@@ -50,6 +50,18 @@ to keep that documentation in good shape as the project runs.
 If the user asks you to do work that has not been logged, surface it: offer to
 log the conversation and the human time before moving on.
 
+## Automatic logging via hooks
+
+Three Claude Code hooks at `.claude/hooks/` automate the routine parts of AFA logging:
+
+- `session-start.py` records a sentinel at session open.
+- `log-turn.py` re-renders the full session transcript to `submission/conversations/<date>_<sessionid8>_<slug>.md` after every assistant turn.
+- `session-end.py` appends an auto-review row to `submission/human_time_log.md` and the conversation index.
+
+The hooks are silent — they fire on Claude Code events, not on user prompts. They skip automatically if (a) today is before 2026-06-01, (b) `.no-afa-logging` exists at the repo root, or (c) `submission/initial_prompt.md` still holds the unedited template. See `submission/HOOKS.md` for details.
+
+**Implication for the assistant:** when running in this repo with hooks active, do **not** invoke `/log-conversation` for the *current* Claude Code session — the hook is already writing the transcript. Use `/log-conversation` only for conversations that happened *outside* Claude Code (Codex, web UI, phone, etc.) and need to be backfilled. The assistant should still remind the user to log direct human work via `/log-human-time` since the hook's auto-review row needs reclassification.
+
 ## Skill routing
 
 Before responding to any research-related prompt, check whether a skill applies.
