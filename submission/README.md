@@ -44,10 +44,24 @@ the repo's research skills:
 - `/idea <specific idea>` screens a single candidate end-to-end.
 - `/lit-review`, `/lit-search`, `/lit-landscape`, `/verify-citations` support the literature work.
 
-Every AI conversation produced by these skills should be captured via
-`/log-conversation` so the submission's `conversations/` folder reflects the
-real workflow. Every block of direct human work should be captured via
-`/log-human-time`.
+## How conversation capture works
+
+Conversation transcripts are captured two ways:
+
+1. **Automatic capture via Claude Code hooks** (`.claude/hooks/`). When Claude
+   Code runs in this repo on or after 2026-06-01, after `submission/initial_prompt.md`
+   has been populated, the `Stop` hook re-renders the entire session transcript
+   into `conversations/` after every assistant turn. The `SessionEnd` hook
+   appends a row to `human_time_log.md` and to the conversation index. See
+   `HOOKS.md` for details. Codex has equivalent hooks under `.codex/hooks/`.
+2. **Manual capture for non-hooked sessions.** For conversations that happened
+   outside Claude Code or Codex (web UI, phone, other CLIs), use
+   `/log-conversation` to paste the transcript into the same directory.
+
+Direct human work that does not happen inside an AI session — typing into files
+in another editor, data pulled by hand, offline decisions — must be logged
+manually with `/log-human-time` and described in `workflow.md`. The hooks
+cannot observe this work.
 
 See `../README.md` and `../SKILLS_USE_GUIDE.md` for the full skill catalog.
 

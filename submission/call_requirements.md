@@ -55,6 +55,30 @@ human scholarly contribution.
 | Model configuration. | `submission/model_config.md` |
 | Full workflow. | `submission/workflow.md` |
 
+## How the template strictly enforces the rules
+
+| Rule | Enforcement mechanism |
+|---|---|
+| Investigation begins on or after 2026-06-01. | `/init-submission` refuses to populate `initial_prompt.md` with an earlier date. All three Claude Code hooks (`session-start.py`, `log-turn.py`, `session-end.py`) and both Codex hooks skip silently before that date. `/log-human-time` refuses sessions before 2026-06-01. |
+| Entirely new project. | `/init-submission` requires explicit confirmation in the eligibility gate of `initial_prompt.md`. |
+| First project act is the initial prompt. | Eligibility gate in `initial_prompt.md`. |
+| No non-author humans perform project work. | Eligibility gate in `initial_prompt.md`. `workflow.md` compliance summary is the audit exhibit. |
+| Each author on ≤ 3 submissions, ≤ 1 lead-author paper. | Eligibility gate in `initial_prompt.md`. `/init-submission` refuses if the gate is unconfirmed. |
+| All AI conversations documented. | Hooks at `.claude/hooks/` and `.codex/hooks/` auto-capture every Claude Code / Codex session as Markdown under `conversations/`, with credential scrubbing. `/log-conversation` for non-hooked sessions. |
+| Time log of human activity. | `/log-human-time` for manual entries; the `SessionEnd` hook appends `auto-review` rows that the human reclassifies before submission. |
+| Contribution report. | `/contribution-report` regenerates from `git blame` and cross-references against `conversations/`. Refuses to run with uncommitted changes. |
+| Direct human contributions documented. | `workflow.md` has a dedicated "Direct human contributions outside of prompts" table. The contribution report's edge-cases section captures ghost-written / paste-of-AI categories. |
+| AI plays a systematic role across multiple stages. | `model_config.md` has an "AI role by stage" table covering eight project stages; the LaTeX paper template has matching Appendix A-D placeholders. |
+
+## Fail-closed behavior
+
+The template is built so that nothing creating a falsified compliance record can run before the AFA rules permit it:
+
+- All hooks skip if today is before 2026-06-01.
+- All hooks skip if `submission/initial_prompt.md` still contains the unedited template placeholder text.
+- A `.no-afa-logging` file at the repo root disables hooks for sessions the author does not want included in the submission record (e.g., exploratory work that is not part of the project).
+- `/init-submission`, `/log-human-time`, and `/log-conversation` refuse to write entries dated before 2026-06-01.
+
 ## Evaluation Emphasis
 
 Human reviewers will use standard academic criteria: novelty and importance of
