@@ -194,5 +194,4 @@ To rotate your key, go to **Settings > API Keys**, click **Regenerate** on the e
 - [README.md](./README.md) — Starter-kit overview, workflows, and quick setup
 - [Corbis MCP Setup Guide for Codex](./CORBIS_MCP_CODEX_GUIDE.md) — Codex-specific `config.toml` setup and troubleshooting
 - [Corbis MCP Tool Reference](./CORBIS_MCP_TOOL_REFERENCE.md) — **Detailed parameter reference, output schemas, and recommended workflows for every tool**
-- [Corbis Cursor Plugin](./CORBIS_CURSOR_PLUGIN.md) — Cursor plugin setup and direct MCP configuration
 - [Corbis MCP Server Guide](./CORBIS_MCP_GUIDE.md) — Full architecture and multi-platform setup (Codex, Cursor, Claude, ChatGPT)

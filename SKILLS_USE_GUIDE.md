@@ -91,7 +91,7 @@ If your assistant supports repo-defined agents, use the paper-reader prompt:
 
 - **Displacement target.** What an idea would render wrong if it succeeds. Must be one of four concrete categories with a falsifiable counterfactual: (1) a named paper, (2) a model claim, (3) an empirical regularity, or (4) a maintained assumption / measurement convention / decision-relevant belief (this last category requires citing evidence the assumption is held and naming a specific alternative). Ideas without a concrete target cap at Strong Field Candidate.
 
-- **Calibration set.** `references/top_journal_calibration.json`, built by `/calibrate-rubric`. ~20 recent JF/JFE/RFS acceptances and ~20 stalled SSRN analogs, each tagged with question, mechanism, identification style, and displacement target. The external anchor for tier labels.
+- **Calibration set.** `references/top_journal_calibration.json`, built by `/calibrate-rubric`. ~40 recent JF/JFE/RFS acceptances and ~40 stalled SSRN analogs, each tagged with question, mechanism, identification style, and displacement target. The external anchor for tier labels.
 
 - **Archetype parity.** For each top-tier candidate, the skill pulls 3 accepted and 2 stalled analogs from the calibration set. Below parity on all dimensions of all three accepted → tier downgrade. Can't differentiate from a stalled analog → tier downgrade.
 

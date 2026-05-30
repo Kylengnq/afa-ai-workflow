@@ -1,6 +1,6 @@
 ---
-name: research-idea-generator
-description: "Generate novel research ideas in finance and real estate using structured heuristic lenses, then gate top-tier labels against a held-out calibration set, displacement targets, lens-source discipline, archetype benchmarking, and an adversarial two-editor desk-reject simulation. Produces a curated Idea Menu of survivors, not a brainstorming list."
+name: "research-idea-generator"
+description: "Generate novel research ideas in finance and real estate using structured heuristic lenses, then gate top-tier labels against a held-out calibration set, displacement targets, lens-source discipline, archetype benchmarking, novelty confidence rules, and a three-editor desk-reject simulation. Produces a curated Idea Menu of survivors, a Wildcard slot, and a Graveyard — not a brainstorming list."
 ---
 
 # Research Idea Generator
@@ -21,7 +21,7 @@ Three idea-source strategies, ranked by effectiveness:
 
 ## Calibration anchor
 
-Before scoring any candidate, read `references/top_journal_calibration.json` if it exists. This file is built by the `calibrate-rubric` skill and contains ~20 recent JF/JFE/RFS acceptances and ~20 stalled working-paper analogs, with each anchored by its question, mechanism, identification style, generating lens, and displacement target.
+Before scoring any candidate, read `references/top_journal_calibration.json` if it exists. This file is built by the `calibrate-rubric` skill and contains ~40 recent JF/JFE/RFS acceptances and ~40 stalled working-paper analogs, with each anchored by its question, mechanism, identification style, generating lens, and displacement target.
 
 The calibration set is the external anchor for the "Top Generalist Candidate" label. Without it, the skill falls back to internal scoring only and cannot issue Top Generalist labels — it caps at Strong Field Candidate and warns the user.
 

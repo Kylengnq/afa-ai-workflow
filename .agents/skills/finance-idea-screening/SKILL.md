@@ -1,6 +1,6 @@
 ---
-name: finance-idea-screening
-description: "Screen and refine research ideas in corporate finance, investments, asset pricing, and real estate against a held-out top-3 calibration set. Enforces a displacement-target gate, archetype benchmarking against recent JF/JFE/RFS acceptances and stalled analogs, and an adversarial two-editor desk-reject simulation before issuing a Go / Revise / Kill verdict."
+name: "finance-idea-screening"
+description: "Screen and refine research ideas in corporate finance, investments, asset pricing, and real estate against a held-out top-3 calibration set. Enforces a displacement-target gate, archetype benchmarking against recent JF/JFE/RFS acceptances and stalled-paper failure modes, a top-tier novelty audit, a rule-based novelty confidence cap, and a three-editor desk-reject simulation before issuing a Top Generalist Candidate / Strong Field Candidate / Revise / Kill verdict. Writes a per-idea lineage directory and an MVE block."
 ---
 
 # Finance Idea Screening
@@ -9,7 +9,7 @@ Turn rough topics into credible paper ideas or kill weak ideas early. Calibrated
 
 ## Calibration anchor
 
-Before scoring any candidate, read `references/top_journal_calibration.json` if it exists. This file is built by the `calibrate-rubric` skill and contains ~20 recent JF/JFE/RFS acceptances and ~20 stalled working-paper analogs.
+Before scoring any candidate, read `references/top_journal_calibration.json` if it exists. This file is built by the `calibrate-rubric` skill and contains ~40 recent JF/JFE/RFS acceptances and ~40 stalled working-paper analogs.
 
 The calibration set is the external anchor for the "Top Generalist Candidate" verdict. Without it, the skill caps at "Strong Field Candidate" and warns the user.
 
@@ -347,7 +347,7 @@ Produce one Idea Card using `assets/idea-card-template.md`, plus:
 - A one-sentence contribution claim
 - A one-sentence skepticism test from a referee's point of view
 - A scoring rubric result (six dimensions)
-- A Go / Revise / Kill verdict with specific reasoning
+- A Top Generalist Candidate / Strong Field Candidate / Revise / Kill verdict with specific reasoning
 - The four stress-test answers (sharpened per Stage 2)
 - The killer exhibit description
 

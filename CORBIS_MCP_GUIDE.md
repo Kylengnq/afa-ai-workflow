@@ -156,7 +156,6 @@ This is the same Streamable HTTP URL pattern Corbis exports from the app.
 
 **Note**: For local development, use `http://localhost:3000/api/mcp/universal?apikey=YOUR_KEY` instead.
 
-If you want the plugin-oriented setup that ships with this starter kit, see [CORBIS_CURSOR_PLUGIN.md](./CORBIS_CURSOR_PLUGIN.md).
 
 ### Connecting from Codex
 
@@ -234,5 +233,4 @@ Agents can read these resources for context:
 - [README.md](./README.md) – Starter-kit overview and workflow tour
 - [CORBIS_MCP_CODEX_GUIDE.md](./CORBIS_MCP_CODEX_GUIDE.md) – Codex-specific setup and troubleshooting
 - [CORBIS_MCP_CLAUDE_CODE_GUIDE.md](./CORBIS_MCP_CLAUDE_CODE_GUIDE.md) – Claude Code setup
-- [CORBIS_CURSOR_PLUGIN.md](./CORBIS_CURSOR_PLUGIN.md) – Cursor plugin and direct MCP setup notes
 - [CORBIS_MCP_TOOL_REFERENCE.md](./CORBIS_MCP_TOOL_REFERENCE.md) – Tool-by-tool params, outputs, and workflow guidance

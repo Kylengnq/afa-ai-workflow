@@ -1,6 +1,6 @@
 ---
 name: calibrate-rubric
-description: "Build the held-out calibration set that anchors /brainstorm and /idea scoring against actual top-3 journal outcomes. Pulls ~20 recent JF/JFE/RFS acceptances and ~20 stalled working-paper analogs via Corbis, extracts question, contribution, displacement target, and lens classification, and writes references/top_journal_calibration.json."
+description: "Build the held-out calibration set that anchors /brainstorm and /idea scoring against actual top-3 journal outcomes. Pulls ~40 recent JF/JFE/RFS acceptances and ~40 stalled working-paper analogs via Corbis, tags each with question, mechanism, identification style, displacement target, failure modes, field tags, and calibration confidence, and writes references/top_journal_calibration.json."
 ---
 
 # Calibrate Rubric
@@ -38,7 +38,7 @@ For each target journal:
 
 Deduplicate by `id`. Filter to recent (post-acceptance, not just SSRN-posted).
 Sample to roughly equal coverage across the topic areas listed in the inputs.
-Target ~20 papers total.
+Target ~40 papers total.
 
 ### Phase 2: Pull stalled analogs
 
@@ -47,7 +47,7 @@ For each topic area covered by the acceptances:
 1. Pick the 2–3 main accepted papers in that area.
 2. `search_papers` with their question phrased as a research query, `minYear: <today - 48mo>`, `maxYear: <today - 24mo>`, `matchCount: 20`. The age window selects papers that were drafted 2+ years ago and would have had time to land at a top-3 by now.
 3. Filter to papers with `citedByCount < 30` and no `journal` field set to JF/JFE/RFS — i.e., still working papers or placed at field journals.
-4. Pick ~4 per area as stalled analogs (~20 total).
+4. Pick ~8 per area as stalled analogs (~40 total).
 
 This is heuristic, not exact — the goal is a contrast set, not a clean
 ground truth. Note when the classification is uncertain.

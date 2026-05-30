@@ -147,7 +147,7 @@ in this order on or after 2026-06-01:
 /init-submission        # captures the initial prompt, validates 2026-06-01+, populates submission/
 /calibrate-rubric       # builds references/top_journal_calibration.json from recent JF/JFE/RFS
 /brainstorm <topic>     # generates 10 ranked ideas; requires the calibration set to issue Top Generalist labels
-/idea <best candidate>  # screens the chosen idea end-to-end and returns Go / Revise / Kill
+/idea <best candidate>  # screens the chosen idea end-to-end and returns Top Generalist Candidate / Strong Field Candidate / Revise / Kill
 ```
 
 `/calibrate-rubric` is the step most people miss. Without it, `/brainstorm` and `/idea` cap their verdict at "Strong Field Candidate" — they still run, but they can't certify an idea against the top-3 journal frontier. It takes ~5-10 minutes and only needs to run once every ~6 months.
@@ -178,7 +178,7 @@ in this order on or after 2026-06-01:
 
 | Workflow | What it does |
 |---|---|
-| `/calibrate-rubric` | Build (or refresh) `references/top_journal_calibration.json` — the held-out anchor of ~20 recent JF/JFE/RFS acceptances and ~20 stalled analogs that gates "Top Generalist Candidate" labels in `/brainstorm` and `/idea`. Run once every ~6 months. |
+| `/calibrate-rubric` | Build (or refresh) `references/top_journal_calibration.json` — the held-out anchor of ~40 recent JF/JFE/RFS acceptances and ~40 stalled analogs that gates "Top Generalist Candidate" labels in `/brainstorm` and `/idea`. Run once every ~6 months. |
 
 ### Research skills
 
@@ -199,7 +199,7 @@ agents.
 `/brainstorm` and `/idea` use a few terms that aren't standard finance vocabulary. Quick definitions:
 
 - **Displacement target.** What an idea would render wrong if it succeeds. Must be one of four concrete categories with a falsifiable counterfactual: (1) a named paper (author, year), (2) a model claim, (3) an empirical regularity, or (4) a maintained assumption / measurement convention / decision-relevant belief (this last category requires citing evidence the assumption is held and naming a specific alternative — vague "challenges conventional wisdom" claims do not qualify). Ideas without a concrete target are capped at Strong Field Candidate.
-- **Calibration set.** The held-out reference file at `references/top_journal_calibration.json`, built by `/calibrate-rubric`. Contains ~20 recent JF/JFE/RFS acceptances and ~20 stalled SSRN analogs, each tagged with question, mechanism, identification style, and displacement target. The external anchor for tier labels.
+- **Calibration set.** The held-out reference file at `references/top_journal_calibration.json`, built by `/calibrate-rubric`. Contains ~40 recent JF/JFE/RFS acceptances and ~40 stalled SSRN analogs, each tagged with question, mechanism, identification style, and displacement target. The external anchor for tier labels.
 - **Archetype parity.** For each top-tier candidate, the skill picks 3 accepted and 2 stalled analogs from the calibration set sharing the candidate's mechanism. Below parity on all dimensions of all three accepted → tier downgrade. Can't differentiate from a stalled analog → tier downgrade.
 - **Top-tier novelty audit.** Before issuing a Top Generalist Candidate, the skill fires one final fresh Corbis search scoped to the candidate's displacement target plus mechanism. A near-duplicate caps the verdict at Strong Field Candidate. Cheap belt-and-suspenders check that closes the paper_set blind-spot risk for the highest-stakes label.
 - **Novelty confidence tag (rule-based).** Every verdict carries High / Medium / Low confidence, determined by paper_set coverage, calibration mechanism match, and number of targeted searches that ran. **Low confidence automatically caps the verdict at Strong Field Candidate.** Not LLM self-assessment — thresholds are explicit.
