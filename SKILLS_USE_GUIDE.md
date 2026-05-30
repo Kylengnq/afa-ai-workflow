@@ -4,6 +4,15 @@ How to use the eleven workflows in this AFA 2027 submission template. In Claude
 Code, they are available as slash commands. In Codex, Cursor, and other MCP
 clients, use the same workflow names and examples below as prompt templates.
 
+## Cursor
+
+After cloning, run `bash scripts/setup-cursor.sh` so `.cursor/skills/` symlinks
+to `.agents/skills/`. Set `CORBIS_MCP_API_KEY` and reload MCP (see
+[`CORBIS_MCP_CURSOR_GUIDE.md`](CORBIS_MCP_CURSOR_GUIDE.md)). Type `/init-submission`,
+`/brainstorm <topic>`, `/idea <question>`, and the other names below as prompts;
+Cursor loads the matching skill from `.cursor/skills/`. Output templates are
+indexed in [`TEMPLATES.md`](TEMPLATES.md).
+
 ## Which skill to use
 
 ### AFA submission skills

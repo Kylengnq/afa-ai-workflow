@@ -131,9 +131,12 @@ Many other platforms only ask for the MCP URL and your key. Start with the Strea
 
 ### Connecting from Cursor IDE
 
-Cursor users can either use Corbis's one-click **Add to Cursor** button for instant installation or download the JSON configuration manually. The exported Cursor config uses the URL-only Streamable HTTP method with the API key embedded in the query string.
+For the AFA template repo, use [`CORBIS_MCP_CURSOR_GUIDE.md`](./CORBIS_MCP_CURSOR_GUIDE.md)
+(`scripts/setup-cursor.sh`, `.cursor/mcp.json`, and `.cursor/skills/`).
 
-1. Open **Cursor Settings → MCP** (or edit `.cursor/mcp.json`).
+Cursor users can also use Corbis's one-click **Add to Cursor** button for instant installation or download the JSON configuration manually. The exported Cursor config uses the URL-only Streamable HTTP method with the API key embedded in the query string.
+
+1. Open **Cursor Settings → MCP** (or edit `.cursor/mcp.json` in this repo).
 2. Add the Corbis server:
 
 ```json

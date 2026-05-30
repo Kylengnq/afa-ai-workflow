@@ -1,0 +1,11 @@
+name: AFA 2027 AI Workflow Submission Template
+description: >-
+  Scaffold for the AFA 2027 Special Session on papers written with generative AI:
+  submission logging, Corbis literature skills, LaTeX template, and multi-client
+  setup (Claude Code, Codex, Cursor).
+labels:
+  - afa-2027
+  - research
+  - finance
+  - ai-workflow
+  - corbis

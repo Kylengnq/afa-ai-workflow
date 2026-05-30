@@ -62,6 +62,20 @@ Codex-facing assets live alongside the Claude Code sources:
 Do not edit `.claude/` or `.mcp.json` while optimizing Codex behavior unless the
 user explicitly asks to change Claude Code source configuration.
 
+## Cursor Surfaces
+
+Cursor-facing assets for template users:
+
+- Project instructions: `AGENTS.md` (this file)
+- MCP: `.cursor/mcp.json` (also root `.mcp.json`)
+- Always-on routing: `.cursor/rules/afa-workflow.mdc`
+- Skills: `.cursor/skills/` → symlinks to `.agents/skills/` (run `bash scripts/setup-cursor.sh` after clone)
+- Setup guide: `CORBIS_MCP_CURSOR_GUIDE.md`
+- Template index: `TEMPLATES.md`
+
+Cursor does not use `.claude/commands/`; slash-style names map to skills via
+`source-command-*` wrappers or the primary skill directories in `.agents/skills/`.
+
 ## Automatic Logging
 
 Claude Code hooks remain under `.claude/hooks/` and are documented in

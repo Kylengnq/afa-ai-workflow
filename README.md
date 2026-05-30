@@ -11,7 +11,7 @@ by the Corbis MCP.**
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Works%20with-Claude%20Code-orange)](https://docs.anthropic.com/en/docs/claude-code)
 [![Codex](https://img.shields.io/badge/Works%20with-Codex-black)](./CORBIS_MCP_CODEX_GUIDE.md)
-[![Cursor](https://img.shields.io/badge/Works%20with-Cursor-green)](https://cursor.sh)
+[![Cursor](https://img.shields.io/badge/Works%20with-Cursor-green)](./CORBIS_MCP_CURSOR_GUIDE.md)
 [![Corbis MCP](https://img.shields.io/badge/Search%20with-Corbis-purple)](https://www.corbis.ai)
 
 [The AFA Call](#the-afa-call) | [Quick Start](#quick-start) | [Workflows](#workflows) | [Submission Checklist](#submission-checklist) | [Project Structure](#project-structure)
@@ -78,8 +78,10 @@ runs on.
 ### 1. Use the repo as your project workspace
 
 ```bash
-git clone https://github.com/Agentic-Assets/afa-ai-workflow.git my-afa-project
+# GitHub: Use this template → Create a new repository, then:
+git clone https://github.com/YOUR_ORG/my-afa-project.git
 cd my-afa-project
+bash scripts/setup-cursor.sh   # if using Cursor
 ```
 
 ### 2. Get a Corbis API key (for literature search)
@@ -123,10 +125,17 @@ Full guide: [`CORBIS_MCP_CODEX_GUIDE.md`](CORBIS_MCP_CODEX_GUIDE.md)
 <details>
 <summary><b>Cursor</b></summary>
 
-**Settings > MCP Servers > Add**
+```bash
+bash scripts/setup-cursor.sh   # links .cursor/skills → .agents/skills
+export CORBIS_MCP_API_KEY="corbis_mcp_..."
+```
 
-- Name: `corbis`
-- URL: `https://www.corbis.ai/api/mcp/universal?apikey=YOUR_KEY`
+Open the repo in Cursor. Project MCP is at `.cursor/mcp.json`; skills and routing
+live under `.cursor/skills/` and `.cursor/rules/`. Use slash-style prompts such as
+`/init-submission`, `/brainstorm <topic>`, and `/idea <question>` (see
+[`SKILLS_USE_GUIDE.md`](SKILLS_USE_GUIDE.md)).
+
+Full guide: [`CORBIS_MCP_CURSOR_GUIDE.md`](CORBIS_MCP_CURSOR_GUIDE.md)
 </details>
 
 <details>
@@ -266,12 +275,14 @@ submission/                  AFA submission package
 .claude/agents/              Paper-reader subagent prompt
 .agents/skills/              Workflow definitions (Codex and other MCP agents)
 .agents/plugins/             Local Codex plugin marketplace
+.cursor/                     Cursor MCP, rules, and skill symlinks (see scripts/setup-cursor.sh)
 notes/lab_notebook.md        Project log
 output/                      Reviews, memos, figures, paper_set.json
 ideas/                       Per-idea lineage from /idea (idea_card.md, gate_scores.json, desk_rejects.md)
 paper/                       LaTeX manuscript (copy from latex_template/)
 latex_template/              Article template with AFA appendix sections
 references/                  Writing norms, citation formatting
+scripts/setup-cursor.sh      Link .cursor/skills to .agents/skills after clone
 ```
 
 ## Optional Extras
@@ -311,6 +322,8 @@ server.
 | [`CORBIS_MCP_CLAUDE_CODE_GUIDE.md`](CORBIS_MCP_CLAUDE_CODE_GUIDE.md) | Claude Code setup |
 | [`CORBIS_MCP_CODEX_GUIDE.md`](CORBIS_MCP_CODEX_GUIDE.md) | Codex setup |
 | [`CORBIS_MCP_TOOL_REFERENCE.md`](CORBIS_MCP_TOOL_REFERENCE.md) | Tool-by-tool parameters and workflow tips |
+| [`CORBIS_MCP_CURSOR_GUIDE.md`](CORBIS_MCP_CURSOR_GUIDE.md) | Cursor setup (skills, MCP, slash prompts) |
+| [`TEMPLATES.md`](TEMPLATES.md) | LaTeX and skill output template index |
 | [`CORBIS_MCP_GUIDE.md`](CORBIS_MCP_GUIDE.md) | MCP architecture and multi-client integration |
 
 ## Acknowledgments and Scope

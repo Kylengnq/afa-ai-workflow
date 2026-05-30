@@ -1,0 +1,61 @@
+---
+description: AFA 2027 submission template — skill routing, slash aliases, templates, and Corbis usage
+alwaysApply: true
+---
+
+# AFA 2027 AI Workflow (Cursor)
+
+This repo is a GitHub template for the AFA 2027 Special Session on papers written with generative AI workflows. Read `AGENTS.md` and `SKILLS_USE_GUIDE.md` for full detail.
+
+## Skills (project)
+
+Canonical skill definitions live in `.agents/skills/`. Cursor discovers them via symlinks in `.cursor/skills/`. If skills are missing after clone, run:
+
+```bash
+bash scripts/setup-cursor.sh
+```
+
+Before any research claim about novelty or literature, use Corbis MCP (`search_papers`, etc.). See `CORBIS_MCP_TOOL_REFERENCE.md`.
+
+## Slash-style prompts (Cursor has no `/commands` folder)
+
+Type these as natural-language requests; the matching skill loads from `.cursor/skills/`:
+
+| Prompt | Skill directory |
+|--------|-----------------|
+| `/init-submission` | `init-submission` |
+| `/log-conversation` | `log-conversation` |
+| `/log-human-time` | `log-human-time` |
+| `/contribution-report` | `contribution-report` |
+| `/calibrate-rubric` | `calibrate-rubric` |
+| `/lit-review` | `literature-review` or `source-command-lit-review` |
+| `/lit-search` | `literature-positioning-map` or `source-command-lit-search` |
+| `/brainstorm` | `research-idea-generator` or `source-command-brainstorm` |
+| `/idea` | `finance-idea-screening` or `source-command-idea` |
+| `/verify-citations` | `verify-citations` |
+| `/lit-landscape` | `literature-landscape` or `source-command-lit-landscape` |
+
+First-time order: `init-submission` → `calibrate-rubric` → `brainstorm` or `idea`. Without `references/top_journal_calibration.json`, idea skills cap at Strong Field Candidate.
+
+## Templates and outputs
+
+| Artifact | Path |
+|----------|------|
+| LaTeX paper + AFA appendices | `latex_template/` → copy to `paper/` |
+| Idea menu scaffold | `.agents/skills/research-idea-generator/assets/idea-menu-template.md` |
+| Idea card scaffold | `.agents/skills/finance-idea-screening/assets/idea-card-template.md` |
+| Literature matrix | `.agents/skills/literature-positioning-map/assets/literature-matrix-template.md` |
+| Reading list | `.agents/skills/literature-review/assets/reading-list-template.md` |
+| Shared paper cache | `output/paper_set.json` |
+| Search log | `output/search_log.md` |
+| Submission package | `submission/` |
+
+See `TEMPLATES.md` for a full index.
+
+## Logging in Cursor
+
+Claude Code hooks do not run here. After meaningful AI sessions, run the `log-conversation` skill. After direct human work, run `log-human-time`. See `submission/HOOKS.md`.
+
+## Paper PDFs
+
+For deep reads of central papers, ask to summarize a PDF path; use the built-in `paper-reader` subagent when available, or read the prompt at `.claude/agents/paper-reader.md`.
